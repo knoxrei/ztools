@@ -40,9 +40,9 @@ new #[Title('Home')] class extends Component
         </div>
 
         <div class="w-full md:w-72 flex justify-center shrink-0">
-            <div class="relative p-6 bg-zinc-800/40 border border-zinc-800 rounded-2xl shadow-xl flex flex-col items-center justify-center text-center space-y-4">
-                <div class="p-3 bg-violet-500/20 rounded-xl text-violet-400">
-                    <flux:icon icon="shield-check" class="size-10" />
+            <div class="relative p-6   rounded-2xl flex flex-col items-center justify-center text-center space-y-4">
+                <div class="p-3 ">
+                    <img src="{{ asset('/logo.webp') }}">
                 </div>
                 <div class="space-y-1">
                     <h3 class="text-sm font-bold text-white tracking-wide">Secure Sandbox</h3>
