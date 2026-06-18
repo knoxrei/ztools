@@ -112,11 +112,6 @@ new #[Title('Home')] class extends Component
 
     </div>
 
-    {{-- Mid-Page Ad Banner --}}
-    <div class="flex justify-center py-2">
-        <div id="banner-place-468-1" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
-    </div>
-
     {{-- Detailed Tor Network Statement --}}
     <div class="bg-zinc-50 dark:bg-zinc-900/40 rounded-3xl border border-zinc-200 dark:border-zinc-800/80 p-8 sm:p-10 space-y-6">
         <div class="flex items-center gap-3">
@@ -136,29 +131,4 @@ new #[Title('Home')] class extends Component
         </div>
     </div>
 
-    {{-- Bottom Ad Banner --}}
-    <div class="flex justify-center py-4">
-        <div id="banner-place-468-2" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
-    </div>
-
-    <script>
-        function initializeBanners() {
-            if (typeof getBanners === 'function') {
-                getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/2");
-            } else {
-                let retries = 0;
-                const interval = setInterval(() => {
-                    retries++;
-                    if (typeof getBanners === 'function') {
-                        getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/2");
-                        clearInterval(interval);
-                    } else if (retries > 30) {
-                        clearInterval(interval);
-                    }
-                }, 100);
-            }
-        }
-        document.addEventListener('livewire:navigated', initializeBanners);
-        initializeBanners();
-    </script>
 </div>

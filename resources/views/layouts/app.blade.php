@@ -205,13 +205,44 @@ $pageKeywords = $seo['keywords'];
         </flux:sidebar>
 
         <flux:main container>
+            {{-- Top Ad Banner --}}
+            <div class="flex justify-center mb-6 overflow-hidden">
+                <div id="banner-place-468-1" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+            </div>
+
             {{ $slot }}
+
+            {{-- Bottom Ad Banner --}}
+            <div class="flex justify-center mt-8 overflow-hidden">
+                <div id="banner-place-468-2" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+            </div>
         </flux:main>
     </div>
 
     @livewireScripts
 
     @fluxScripts
+
+    <script>
+        function initializeBanners() {
+            if (typeof getBanners === 'function') {
+                getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/2");
+            } else {
+                let retries = 0;
+                const interval = setInterval(() => {
+                    retries++;
+                    if (typeof getBanners === 'function') {
+                        getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/2");
+                        clearInterval(interval);
+                    } else if (retries > 30) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+            }
+        }
+        document.addEventListener('livewire:navigated', initializeBanners);
+        initializeBanners();
+    </script>
 </body>
 
 
