@@ -1,77 +1,86 @@
 @php
-    $routeName = request()->route()?->getName();
-    
-    $seo = match ($routeName) {
-        'home' => [
-            'title' => 'Z-Knox - Advanced Cybersecurity & Encryption Tools Suite',
-            'description' => 'Z-Knox is a comprehensive, professional suite of advanced cryptographic, digital forensics, and privacy tools. Encrypt/decrypt payloads, generate secure QR codes, check URL safety, create cloaked short links, and perform forensic analysis.',
-            'keywords' => 'cybersecurity, encryption, decryption, cryptography, forensics, qr code generator, shortlink, url checker, online privacy, secure tools',
-        ],
-        'encryption' => [
-            'title' => 'Symmetric Encryption Tool - Secure Payload Cryptography | Z-Knox',
-            'description' => 'Securely encrypt text payloads using advanced algorithms like AES-256, Blowfish, Twofish, ChaCha20, DES, Triple DES, and RC4. Set custom keys and initialization vectors (IV).',
-            'keywords' => 'symmetric encryption, aes-256-cbc, chacha20, blowfish, twofish, payload encryption, secure cryptography',
-        ],
-        'decryption' => [
-            'title' => 'Symmetric Decryption Tool - Decrypt Ciphertexts Securely | Z-Knox',
-            'description' => 'Decrypt encrypted ciphertexts. Supports base64 and hex encoded ciphertexts encrypted with AES, Twofish, Blowfish, DES, 3DES, ChaCha20, and RC4.',
-            'keywords' => 'symmetric decryption, decrypt cipher, aes decryption, chacha20 decrypt, base64 decryption',
-        ],
-        'hash-checksum' => [
-            'title' => 'Hash & Checksum Generator - Verify File Integrity | Z-Knox',
-            'description' => 'Calculate hash checksums for texts and uploaded files. Supports MD5, SHA-1, SHA-256, SHA-512, MurmurHash, and bcrypt verification.',
-            'keywords' => 'hash generator, file checksum, sha256 hash, md5 checksum, bcrypt verifier, file integrity',
-        ],
-        'forensics' => [
-            'title' => 'Digital Forensics & Metadata Analyzer - Inspect Files | Z-Knox',
-            'description' => 'Analyze and inspect uploaded files for metadata, hidden EXIF data, hex structures, MIME types, and potential security analysis.',
-            'keywords' => 'digital forensics, metadata extraction, exif analyzer, hex viewer, document analysis, threat detection',
-        ],
-        'qrcode' => [
-            'title' => 'Professional QR Code Generator - Custom & Secure QR Codes | Z-Knox',
-            'description' => 'Create custom QR codes with custom colors, size, margins, and formats (PNG, SVG). Presets for text, URL, Wi-Fi, email, SMS, phone, geo-coordinates, and vCards.',
-            'keywords' => 'qr code generator, custom qr code, wifi qr code, vcard qr code, svg qr code, secure qr codes',
-        ],
-        'fake-identity' => [
-            'title' => 'Fake Identity Generator - Developer Testing Profiles | Z-Knox',
-            'description' => 'Generate complete, realistic dummy user profiles and fake identities for testing, QA, data seeding, and privacy protection.',
-            'keywords' => 'identity generator, dummy data, fake profile, user seeding, qa testing data, privacy profiles',
-        ],
-        'shortlink' => [
-            'title' => 'Secure Short Link Creator - Cloaking & Tor Redirection | Z-Knox',
-            'description' => 'Shorten URLs with advanced features like password protection, click limits, expiry times, link cloaking, and Tor (.onion) target support.',
-            'keywords' => 'url shortener, secure shortlink, link cloaking, tor redirection, self-destruct link, password protected link',
-        ],
-        'url-checker' => [
-            'title' => 'URL Safety & Redirect Checker - Analyze Web Links | Z-Knox',
-            'description' => 'Scan URLs for safety, inspect HTTP redirect headers, verify IP addresses, check online status, and trace redirect chains.',
-            'keywords' => 'url checker, redirect tracer, domain safety, link scanner, website status checker, threat intelligence',
-        ],
-        'tools' => [
-            'title' => 'Tools Suite - Advanced Cyber & Privacy Tools | Z-Knox',
-            'description' => 'Explore the complete suite of advanced cybersecurity, privacy, and encryption utilities available on Z-Knox.',
-            'keywords' => 'cybersecurity suite, cryptography tools, network tools, developer utilities, privacy dashboard',
-        ],
-        'support' => [
-            'title' => 'Support Z-Knox - Help Keep Our Privacy Tools Online',
-            'description' => 'Support Z-Knox and help keep advanced privacy, forensic, and cryptographic tools free and open source. We accept cryptocurrency donations.',
-            'keywords' => 'support privacy, donate crypto, monero donation, bitcoin support, open source funding',
-        ],
-        'contact' => [
-            'title' => 'Contact Us - Z-Knox Security Support',
-            'description' => 'Get in touch with the Z-Knox administration and support team. Contact us securely via PGP email, Session messenger, or Telegram.',
-            'keywords' => 'contact support, secure chat, pgp support, session messenger, customer contact',
-        ],
-        default => [
-            'title' => 'Z-Knox - Advanced Cybersecurity & Encryption Tools',
-            'description' => 'Z-Knox is a professional suite of advanced cryptographic, digital forensics, and privacy tools.',
-            'keywords' => 'cybersecurity, encryption, cryptography, forensics, secure tools',
-        ]
-    };
+$routeName = request()->route()?->getName();
 
-    $pageTitle = isset($title) ? $title . ' - ' . config('app.name') : $seo['title'];
-    $pageDescription = $seo['description'];
-    $pageKeywords = $seo['keywords'];
+$seo = match ($routeName) {
+'home' => [
+'title' => 'Z-Knox - Advanced Cybersecurity & Encryption Tools Suite',
+'description' => 'Z-Knox is a comprehensive, professional suite of advanced cryptographic, digital forensics, and privacy tools. Encrypt/decrypt payloads, generate secure QR codes, check URL safety, create cloaked short links, and perform forensic analysis.',
+'keywords' => 'cybersecurity, encryption, decryption, cryptography, forensics, qr code generator, shortlink, url checker, online privacy, secure tools',
+],
+'encryption' => [
+'title' => 'Symmetric Encryption Tool - Secure Payload Cryptography | Z-Knox',
+'description' => 'Securely encrypt text payloads using advanced algorithms like AES-256, Blowfish, Twofish, ChaCha20, DES, Triple DES, and RC4. Set custom keys and initialization vectors (IV).',
+'keywords' => 'symmetric encryption, aes-256-cbc, chacha20, blowfish, twofish, payload encryption, secure cryptography',
+],
+'decryption' => [
+'title' => 'Symmetric Decryption Tool - Decrypt Ciphertexts Securely | Z-Knox',
+'description' => 'Decrypt encrypted ciphertexts. Supports base64 and hex encoded ciphertexts encrypted with AES, Twofish, Blowfish, DES, 3DES, ChaCha20, and RC4.',
+'keywords' => 'symmetric decryption, decrypt cipher, aes decryption, chacha20 decrypt, base64 decryption',
+],
+'hash-checksum' => [
+'title' => 'Hash & Checksum Generator - Verify File Integrity | Z-Knox',
+'description' => 'Calculate hash checksums for texts and uploaded files. Supports MD5, SHA-1, SHA-256, SHA-512, MurmurHash, and bcrypt verification.',
+'keywords' => 'hash generator, file checksum, sha256 hash, md5 checksum, bcrypt verifier, file integrity',
+],
+'forensics' => [
+'title' => 'Digital Forensics & Metadata Analyzer - Inspect Files | Z-Knox',
+'description' => 'Analyze and inspect uploaded files for metadata, hidden EXIF data, hex structures, MIME types, and potential security analysis.',
+'keywords' => 'digital forensics, metadata extraction, exif analyzer, hex viewer, document analysis, threat detection',
+],
+'qrcode' => [
+'title' => 'Professional QR Code Generator - Custom & Secure QR Codes | Z-Knox',
+'description' => 'Create custom QR codes with custom colors, size, margins, and formats (PNG, SVG). Presets for text, URL, Wi-Fi, email, SMS, phone, geo-coordinates, and vCards.',
+'keywords' => 'qr code generator, custom qr code, wifi qr code, vcard qr code, svg qr code, secure qr codes',
+],
+'fake-identity' => [
+'title' => 'Fake Identity Generator - Developer Testing Profiles | Z-Knox',
+'description' => 'Generate complete, realistic dummy user profiles and fake identities for testing, QA, data seeding, and privacy protection.',
+'keywords' => 'identity generator, dummy data, fake profile, user seeding, qa testing data, privacy profiles',
+],
+'shortlink' => [
+'title' => 'Secure Short Link Creator - Cloaking & Tor Redirection | Z-Knox',
+'description' => 'Shorten URLs with advanced features like password protection, click limits, expiry times, link cloaking, and Tor (.onion) target support.',
+'keywords' => 'url shortener, secure shortlink, link cloaking, tor redirection, self-destruct link, password protected link',
+],
+'url-checker' => [
+'title' => 'URL Safety & Redirect Checker - Analyze Web Links | Z-Knox',
+'description' => 'Scan URLs for safety, inspect HTTP redirect headers, verify IP addresses, check online status, and trace redirect chains.',
+'keywords' => 'url checker, redirect tracer, domain safety, link scanner, website status checker, threat intelligence',
+],
+'tools' => [
+'title' => 'Tools Suite - Advanced Cyber & Privacy Tools | Z-Knox',
+'description' => 'Explore the complete suite of advanced cybersecurity, privacy, and encryption utilities available on Z-Knox.',
+'keywords' => 'cybersecurity suite, cryptography tools, network tools, developer utilities, privacy dashboard',
+],
+'support' => [
+'title' => 'Support Z-Knox - Help Keep Our Privacy Tools Online',
+'description' => 'Support Z-Knox and help keep advanced privacy, forensic, and cryptographic tools free and open source. We accept cryptocurrency donations.',
+'keywords' => 'support privacy, donate crypto, monero donation, bitcoin support, open source funding',
+],
+'contact' => [
+'title' => 'Contact Us - Z-Knox Security Support',
+'description' => 'Get in touch with the Z-Knox administration and support team. Contact us securely via PGP email, Session messenger, or Telegram.',
+'keywords' => 'contact support, secure chat, pgp support, session messenger, customer contact',
+],
+default => [
+'title' => 'Z-Knox - Advanced Cybersecurity & Encryption Tools',
+'description' => 'Z-Knox is a professional suite of advanced cryptographic, digital forensics, and privacy tools.',
+'keywords' => 'cybersecurity, encryption, cryptography, forensics, secure tools',
+]
+};
+
+$pageTitle = isset($title) ? $title . ' - ' . config('app.name') : $seo['title'];
+$pageDescription = $seo['description'];
+$pageKeywords = $seo['keywords'];
+
+// Clearnet / Tor Switch Logic
+$host = !app()->runningInConsole() ? request()->getHost() : '';
+$isOnion = str_ends_with(strtolower($host), '.onion');
+$clearnetBase = env('CLEARNET_CONNECTION', config('app.url')); 
+$torBase = env('TOR_CONNECTION', 'http://localhost.onion');
+$currentPathAndQuery = !app()->runningInConsole() ? request()->getRequestUri() : '/';
+$clearnetUrl = rtrim($clearnetBase, '/') . $currentPathAndQuery;
+$torUrl = rtrim($torBase, '/') . $currentPathAndQuery;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -104,31 +113,31 @@
 
     <!-- JSON-LD Structured Data for WebSite -->
     <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": "WebSite",
-        "name": "{{ config('app.name') }}",
-        "url": "{{ url('/') }}",
-        "potentialAction": {
-            "@@type": "SearchAction",
-            "target": "{{ url('/tools') }}?search={search_term_string}",
-            "query-input": "required name=search_term_string"
+        {
+            "@@context": "https://schema.org",
+            "@@type": "WebSite",
+            "name": "{{ config('app.name') }}",
+            "url": "{{ url('/') }}",
+            "potentialAction": {
+                "@@type": "SearchAction",
+                "target": "{{ url('/tools') }}?search={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
         }
-    }
     </script>
 
     <!-- JSON-LD Structured Data for WebApplication -->
     @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker']))
     <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": "WebApplication",
-        "name": "{{ $pageTitle }}",
-        "url": "{{ request()->url() }}",
-        "description": "{{ $pageDescription }}",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "All"
-    }
+        {
+            "@@context": "https://schema.org",
+            "@@type": "WebApplication",
+            "name": "{{ $pageTitle }}",
+            "url": "{{ request()->url() }}",
+            "description": "{{ $pageDescription }}",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "All"
+        }
     </script>
     @endif
 
@@ -150,11 +159,23 @@
 
             <span class="flex w-full font-bold text-white ">{{ config('app.name') }}</span>
         </div>
-        <flux:navbar class="w-full max-lg:hidden justify-end ">
+        <flux:navbar class="w-full max-lg:hidden justify-end items-center gap-1">
             <flux:navbar.item :href="route('home')" icon="home" :current="request()->routeIs('home')" wire:navigate>Home</flux:navbar.item>
             <flux:navbar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>Tools</flux:navbar.item>
             <flux:navbar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:navbar.item>
             <flux:navbar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:navbar.item>
+            
+            <flux:separator vertical class="mx-2 h-4" />
+            
+            @if($isOnion)
+                <flux:navbar.item :href="$clearnetUrl" icon="globe-alt" class="hover:text-zinc-900 dark:hover:text-white">
+                    Clearnet Version
+                </flux:navbar.item>
+            @else
+                <flux:navbar.item :href="$torUrl" icon="shield-check" class="text-violet-600 dark:text-violet-400 font-semibold">
+                    Tor (.onion)
+                </flux:navbar.item>
+            @endif
         </flux:navbar>
 
     </flux:header>
@@ -169,6 +190,17 @@
                 <flux:sidebar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>All Tools</flux:sidebar.item>
                 <flux:sidebar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:sidebar.item>
                 <flux:sidebar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
+                
+                <flux:separator class="my-2" />
+                @if($isOnion)
+                    <flux:sidebar.item :href="$clearnetUrl" icon="globe-alt">
+                        Clearnet Version
+                    </flux:sidebar.item>
+                @else
+                    <flux:sidebar.item :href="$torUrl" icon="shield-check" class="text-violet-600 dark:text-violet-400 font-semibold!">
+                        Tor Version (.onion)
+                    </flux:sidebar.item>
+                @endif
 
 
 
