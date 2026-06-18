@@ -38,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
 
             if (!$isOnion && !$isLocal) {
                 \Illuminate\Support\Facades\URL::forceScheme('https');
+            } else {
+                config(['app.asset_url' => '/']);
             }
         }
     }
@@ -53,14 +55,15 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
+                ? Password::min(12)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
-            : null,
+                : null,
         );
     }
 }
