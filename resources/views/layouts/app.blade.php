@@ -141,6 +141,7 @@ $pageKeywords = $seo['keywords'];
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    <script src="http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/js/get-banners.js" defer></script>
 </head>
 
 <body x-data x-init="$flux.appearance = 'dark'" class="min-h-screen bg-white dark:bg-zinc-900 antialiased">
