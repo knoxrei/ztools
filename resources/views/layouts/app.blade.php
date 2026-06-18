@@ -72,15 +72,6 @@ default => [
 $pageTitle = isset($title) ? $title . ' - ' . config('app.name') : $seo['title'];
 $pageDescription = $seo['description'];
 $pageKeywords = $seo['keywords'];
-
-// Clearnet / Tor Switch Logic
-$host = !app()->runningInConsole() ? request()->getHost() : '';
-$isOnion = str_ends_with(strtolower($host), '.onion');
-$clearnetBase = env('CLEARNET_CONNECTION', config('app.url')); 
-$torBase = env('TOR_CONNECTION', 'http://localhost.onion');
-$currentPathAndQuery = !app()->runningInConsole() ? request()->getRequestUri() : '/';
-$clearnetUrl = rtrim($clearnetBase, '/') . $currentPathAndQuery;
-$torUrl = rtrim($torBase, '/') . $currentPathAndQuery;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -159,23 +150,11 @@ $torUrl = rtrim($torBase, '/') . $currentPathAndQuery;
 
             <span class="flex w-full font-bold text-white ">{{ config('app.name') }}</span>
         </div>
-        <flux:navbar class="w-full max-lg:hidden justify-end items-center gap-1">
+        <flux:navbar class="w-full max-lg:hidden justify-end ">
             <flux:navbar.item :href="route('home')" icon="home" :current="request()->routeIs('home')" wire:navigate>Home</flux:navbar.item>
             <flux:navbar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>Tools</flux:navbar.item>
             <flux:navbar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:navbar.item>
             <flux:navbar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:navbar.item>
-            
-            <flux:separator vertical class="mx-2 h-4" />
-            
-            @if($isOnion)
-                <flux:navbar.item :href="$clearnetUrl" icon="globe-alt" class="hover:text-zinc-900 dark:hover:text-white">
-                    Clearnet Version
-                </flux:navbar.item>
-            @else
-                <flux:navbar.item :href="$torUrl" icon="shield-check" class="text-violet-600 dark:text-violet-400 font-semibold">
-                    Tor (.onion)
-                </flux:navbar.item>
-            @endif
         </flux:navbar>
 
     </flux:header>
@@ -190,17 +169,6 @@ $torUrl = rtrim($torBase, '/') . $currentPathAndQuery;
                 <flux:sidebar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>All Tools</flux:sidebar.item>
                 <flux:sidebar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:sidebar.item>
                 <flux:sidebar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
-                
-                <flux:separator class="my-2" />
-                @if($isOnion)
-                    <flux:sidebar.item :href="$clearnetUrl" icon="globe-alt">
-                        Clearnet Version
-                    </flux:sidebar.item>
-                @else
-                    <flux:sidebar.item :href="$torUrl" icon="shield-check" class="text-violet-600 dark:text-violet-400 font-semibold!">
-                        Tor Version (.onion)
-                    </flux:sidebar.item>
-                @endif
 
 
 
