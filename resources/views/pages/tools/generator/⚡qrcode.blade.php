@@ -220,7 +220,7 @@ new #[Title('QR Code Generator')] class extends Component
                 @if($activePreset === 'text')
                 <flux:textarea
                     label="Text / Raw Data"
-                    wire:model.live="data"
+                    wire:model.live.debounce.300ms="data"
                     placeholder="Enter any text, phone number, raw data…"
                     rows="4"
                     resize="vertical" />
@@ -229,15 +229,15 @@ new #[Title('QR Code Generator')] class extends Component
                 @elseif($activePreset === 'url')
                 <flux:input
                     label="Website URL"
-                    wire:model.live="data"
+                    wire:model.live.debounce.300ms="data"
                     placeholder="https://example.com"
                     type="url" />
 
                 {{-- Wi-Fi --}}
                 @elseif($activePreset === 'wifi')
                 <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="SSID (Network Name)" wire:model.live="wifiSsid" placeholder="MyNetwork" />
-                    <flux:input label="Password" wire:model.live="wifiPass" type="password" placeholder="••••••••" />
+                    <flux:input label="SSID (Network Name)" wire:model.live.debounce.300ms="wifiSsid" placeholder="MyNetwork" />
+                    <flux:input label="Password" wire:model.live.debounce.300ms="wifiPass" type="password" placeholder="••••••••" />
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <flux:select label="Security" wire:model.live="wifiSec">
@@ -253,32 +253,32 @@ new #[Title('QR Code Generator')] class extends Component
 
                 {{-- Email --}}
                 @elseif($activePreset === 'email')
-                <flux:input label="To" wire:model.live="emailTo" placeholder="recipient@example.com" type="email" />
-                <flux:input label="Subject" wire:model.live="emailSub" placeholder="Hello!" />
-                <flux:textarea label="Body" wire:model.live="emailBody" placeholder="Email body…" rows="3" />
+                <flux:input label="To" wire:model.live.debounce.300ms="emailTo" placeholder="recipient@example.com" type="email" />
+                <flux:input label="Subject" wire:model.live.debounce.300ms="emailSub" placeholder="Hello!" />
+                <flux:textarea label="Body" wire:model.live.debounce.300ms="emailBody" placeholder="Email body…" rows="3" />
 
                 {{-- SMS --}}
                 @elseif($activePreset === 'sms')
-                <flux:input label="Phone Number" wire:model.live="smsTel" placeholder="+1234567890" />
-                <flux:textarea label="Message" wire:model.live="smsMsgBody" placeholder="Your message…" rows="3" />
+                <flux:input label="Phone Number" wire:model.live.debounce.300ms="smsTel" placeholder="+1234567890" />
+                <flux:textarea label="Message" wire:model.live.debounce.300ms="smsMsgBody" placeholder="Your message…" rows="3" />
 
                 {{-- Tel --}}
                 @elseif($activePreset === 'tel')
-                <flux:input label="Phone Number" wire:model.live="telNumber" placeholder="+1234567890" />
+                <flux:input label="Phone Number" wire:model.live.debounce.300ms="telNumber" placeholder="+1234567890" />
 
                 {{-- Geo --}}
                 @elseif($activePreset === 'geo')
                 <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="Latitude" wire:model.live="geoLat" placeholder="-6.200000" />
-                    <flux:input label="Longitude" wire:model.live="geoLon" placeholder="106.816666" />
+                    <flux:input label="Latitude" wire:model.live.debounce.300ms="geoLat" placeholder="-6.200000" />
+                    <flux:input label="Longitude" wire:model.live.debounce.300ms="geoLon" placeholder="106.816666" />
                 </div>
 
                 {{-- vCard --}}
                 @elseif($activePreset === 'vcard')
-                <flux:input label="Full Name" wire:model.live="vcardName" placeholder="John Doe" />
+                <flux:input label="Full Name" wire:model.live.debounce.300ms="vcardName" placeholder="John Doe" />
                 <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="Email" wire:model.live="vcardEmail" type="email" placeholder="john@example.com" />
-                    <flux:input label="Phone" wire:model.live="vcardPhone" placeholder="+1234567890" />
+                    <flux:input label="Email" wire:model.live.debounce.300ms="vcardEmail" type="email" placeholder="john@example.com" />
+                    <flux:input label="Phone" wire:model.live.debounce.300ms="vcardPhone" placeholder="+1234567890" />
                 </div>
                 @endif
 
@@ -309,9 +309,9 @@ new #[Title('QR Code Generator')] class extends Component
                         <div class="flex items-center gap-2">
                             <input
                                 type="color"
-                                wire:model.live="fgColor"
+                                wire:model.live.debounce.300ms="fgColor"
                                 class="h-9 w-14 rounded-lg border border-zinc-300 dark:border-zinc-600 cursor-pointer bg-transparent p-0.5" />
-                            <flux:input wire:model.live="fgColor" class="font-mono text-sm" maxlength="7" />
+                            <flux:input wire:model.live.debounce.300ms="fgColor" class="font-mono text-sm" maxlength="7" />
                         </div>
                     </div>
                     <div>
@@ -321,9 +321,9 @@ new #[Title('QR Code Generator')] class extends Component
                         <div class="flex items-center gap-2">
                             <input
                                 type="color"
-                                wire:model.live="bgColor"
+                                wire:model.live.debounce.300ms="bgColor"
                                 class="h-9 w-14 rounded-lg border border-zinc-300 dark:border-zinc-600 cursor-pointer bg-transparent p-0.5" />
-                            <flux:input wire:model.live="bgColor" class="font-mono text-sm" maxlength="7" />
+                            <flux:input wire:model.live.debounce.300ms="bgColor" class="font-mono text-sm" maxlength="7" />
                         </div>
                     </div>
                 </div>
@@ -331,11 +331,11 @@ new #[Title('QR Code Generator')] class extends Component
                 <div class="grid grid-cols-3 gap-4">
                     <flux:field>
                         <flux:label>Size (px)</flux:label>
-                        <flux:input type="number" wire:model.live="size" min="100" max="1000" step="50" />
+                        <flux:input type="number" wire:model.live.debounce.300ms="size" min="100" max="1000" step="50" />
                     </flux:field>
                     <flux:field>
                         <flux:label>Margin (px)</flux:label>
-                        <flux:input type="number" wire:model.live="margin" min="0" max="100" step="5" />
+                        <flux:input type="number" wire:model.live.debounce.300ms="margin" min="0" max="100" step="5" />
                     </flux:field>
                     <flux:field>
                         <flux:label>Format</flux:label>
