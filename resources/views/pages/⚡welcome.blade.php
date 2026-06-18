@@ -36,20 +36,20 @@ new #[Title('Home')] class extends Component
                 <flux:button :href="route('tools')" variant="filled" class="bg-violet-600 hover:bg-violet-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow transition" wire:navigate>
                     Launch Tools Suite
                 </flux:button>
-                
-                @if($clearnetUrl)
+
+
                 <a href="{{ $clearnetUrl }}" target="_blank" class="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold border border-zinc-700 hover:border-zinc-600 rounded-xl text-sm transition shadow-sm">
                     <flux:icon icon="globe-alt" class="size-4 text-sky-400" />
                     Clearnet Version
                 </a>
-                @endif
 
-                @if($onionUrl)
+
+
                 <a href="{{ $onionUrl }}" target="_blank" class="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold border border-zinc-700 hover:border-zinc-600 rounded-xl text-sm transition shadow-sm">
                     <flux:icon icon="shield-check" class="size-4 text-violet-400" />
                     Tor Onion Version
                 </a>
-                @endif
+
             </div>
         </div>
 
