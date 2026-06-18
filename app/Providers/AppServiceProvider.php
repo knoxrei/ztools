@@ -24,6 +24,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        } elseif (str_starts_with(config('app.url'), 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        } elseif (!app()->runningInConsole()) {
+            $host = request()->getHost();
+            $isOnion = str_ends_with(strtolower($host), '.onion');
+            $isLocal = in_array($host, ['localhost', '127.0.0.1', '::1']) || filter_var($host, FILTER_VALIDATE_IP) !== false;
+
+            if (!$isOnion && !$isLocal) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+        }
     }
 
     /**
