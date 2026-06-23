@@ -13,6 +13,7 @@ Route::livewire('/shortlink', 'pages::tools.shortlink')->name('shortlink');
 Route::livewire('/tools', 'pages::tools.index')->name('tools');
 Route::livewire('/support', 'pages::support')->name('support');
 Route::livewire('/url-checker', 'pages::tools.url-checker')->name('url-checker');
+Route::livewire('/filehost', 'pages::tools.filehost')->name('filehost');
 Route::livewire('/contact', 'pages::contact')->name('contact');
 Route::get('/s/{code}', [App\Http\Controllers\ShortLinkRedirectController::class, 'handle'])->name('short-link.redirect');
 

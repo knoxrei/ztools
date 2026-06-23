@@ -47,6 +47,11 @@ $seo = match ($routeName) {
 'description' => 'Scan URLs for safety, inspect HTTP redirect headers, verify IP addresses, check online status, and trace redirect chains.',
 'keywords' => 'url checker, redirect tracer, domain safety, link scanner, website status checker, threat intelligence',
 ],
+'filehost' => [
+'title' => 'Anonymous File Upload - Secure File Hosting | Z-Knox',
+'description' => 'Upload files and images anonymously to external hosting services. Choose from Gofile, Anonfile, FileMirage, Dump.li, and many more. No account required.',
+'keywords' => 'anonymous file upload, secure file host, gofile upload, anonfile, image host, onion file upload, privacy file sharing',
+],
 'tools' => [
 'title' => 'Tools Suite - Advanced Cyber & Privacy Tools | Z-Knox',
 'description' => 'Explore the complete suite of advanced cybersecurity, privacy, and encryption utilities available on Z-Knox.',
@@ -118,7 +123,7 @@ $pageKeywords = $seo['keywords'];
     </script>
 
     <!-- JSON-LD Structured Data for WebApplication -->
-    @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker']))
+    @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost']))
     <script type="application/ld+json">
         {
             "@@context": "https://schema.org",
@@ -197,6 +202,9 @@ $pageKeywords = $seo['keywords'];
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="shield-check" :href="route('url-checker')" :current="request()->routeIs('url-checker')" wire:navigate>
                         {{ __('URL Checker') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="arrow-up-tray" :href="route('filehost')" :current="request()->routeIs('filehost')" wire:navigate>
+                        {{ __('File Upload') }}
                     </flux:sidebar.item>
 
 

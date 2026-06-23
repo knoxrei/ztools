@@ -171,6 +171,24 @@ new #[Title('Tools Suite')] class extends Component
             </flux:button>
         </div>
 
+        {{-- 9. Anonymous File Upload --}}
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm p-5 flex flex-col justify-between space-y-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition">
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
+                        <flux:icon icon="arrow-up-tray" class="size-4" />
+                    </div>
+                    <h3 class="text-xs font-bold text-zinc-700 dark:text-zinc-200 uppercase tracking-widest">Anonymous File Upload</h3>
+                </div>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
+                    Upload files and images anonymously to external hosting services (Gofile, Anonfile, Dump.li, and more). No account required. Onion & clearnet mirrors available.
+                </p>
+            </div>
+            <flux:button :href="route('filehost')" variant="ghost" size="sm" class="w-full text-violet-600 hover:text-white dark:text-violet-400 hover:bg-violet-600 rounded-xl" wire:navigate>
+                Launch File Upload
+            </flux:button>
+        </div>
+
     </div>
 
 </div>
