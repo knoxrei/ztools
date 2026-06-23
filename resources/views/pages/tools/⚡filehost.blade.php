@@ -103,17 +103,17 @@ new #[Title('Anonymous File Upload')] class extends Component
         {{-- Section Switcher --}}
         <div class="flex flex-wrap gap-2 mb-6">
             @foreach([
-                ['standard', '📦', 'Standard Hosts'],
-                ['experimental', '🧪', 'Experimental'],
-                ['short', '♻', 'Short Retention'],
-                ['advanced', '⚠', 'Advanced Users'],
-            ] as [$key, $icon, $label])
+                ['standard', 'Standard Hosts'],
+                ['experimental', 'Experimental'],
+                ['short', 'Short Retention'],
+                ['advanced', 'Advanced Users'],
+            ] as [$key, $label])
             <button wire:click="setSection('{{ $key }}')"
                 class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold border transition
                     {{ $activeSection === $key
                         ? 'bg-violet-600 border-violet-600 text-white'
                         : 'border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-violet-400 hover:text-violet-500' }}">
-                <span>{{ $icon }}</span> {{ $label }}
+                {{ $label }}
             </button>
             @endforeach
         </div>
@@ -123,7 +123,60 @@ new #[Title('Anonymous File Upload')] class extends Component
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
             {{-- Gofile --}}
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm p-5 space-y-4" x-init="setupDropzone('gofile-input')">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm p-5 space-y-4"
+                x-data="{
+                    file: null,
+                    uploading: false,
+                    result: null,
+                    error: null,
+                    fileName: 'Drop file here or click to browse',
+                    hasFile: false,
+                    onFileChange(e) {
+                        this.file = e.target.files[0] || null;
+                        if (this.file) {
+                            const n = this.file.name;
+                            this.fileName = n.length > 40 ? n.substring(0,37)+'...' : n;
+                            this.hasFile = true;
+                        }
+                        this.result = null; this.error = null;
+                    },
+                    onDrop(e) {
+                        e.preventDefault();
+                        this.file = e.dataTransfer.files[0] || null;
+                        if (this.file) {
+                            const n = this.file.name;
+                            this.fileName = n.length > 40 ? n.substring(0,37)+'...' : n;
+                            this.hasFile = true;
+                        }
+                        this.result = null; this.error = null;
+                    },
+                    clear() {
+                        this.file = null; this.uploading = false;
+                        this.result = null; this.error = null;
+                        this.fileName = 'Drop file here or click to browse';
+                        this.hasFile = false;
+                        this.$refs.fileInput.value = '';
+                    },
+                    async upload() {
+                        if (!this.file) return;
+                        this.uploading = true; this.result = null; this.error = null;
+                        try {
+                            const fd = new FormData();
+                            fd.append('file', this.file);
+                            const r = await fetch('https://upload.gofile.io/contents/uploadFile', { method: 'POST', body: fd });
+                            const json = await r.json();
+                            if (json.status === 'ok' && json.data?.downloadPage) {
+                                this.result = json.data.downloadPage;
+                            } else {
+                                this.error = 'Upload failed. Server did not return a valid response.';
+                            }
+                        } catch(e) {
+                            this.error = 'Upload error: ' + e.message;
+                        } finally {
+                            this.uploading = false;
+                        }
+                    }
+                }">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100">Gofile</h3>
@@ -131,24 +184,110 @@ new #[Title('Anonymous File Upload')] class extends Component
                     </div>
                     <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full uppercase">Recommended</span>
                 </div>
-                <form action="https://upload.gofile.io/contents/uploadFile" method="POST" enctype="multipart/form-data" rel="noreferrer" target="_blank">
-                    <label class="file-drop-zone flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl p-5 cursor-pointer hover:border-violet-500 hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition has-file:border-emerald-500 has-file:bg-emerald-50/30 dragging:border-violet-600 dragging:bg-violet-50/40 mb-3">
-                        <flux:icon icon="arrow-up-tray" class="size-7 text-zinc-400 mb-2" />
-                        <span class="file-name-label text-xs text-zinc-500 dark:text-zinc-400 text-center">Drop file here or click to browse</span>
-                        <input id="gofile-input" type="file" name="file" required class="hidden">
-                    </label>
-                    <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-2 px-4 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
+
+                {{-- Dropzone --}}
+                <label
+                    class="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-5 cursor-pointer transition"
+                    :class="hasFile ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-900/10' : 'border-zinc-300 dark:border-zinc-700 hover:border-violet-500 hover:bg-violet-50/30 dark:hover:bg-violet-900/10'"
+                    @dragover.prevent
+                    @drop="onDrop($event)">
+                    <flux:icon icon="arrow-up-tray" class="size-7 text-zinc-400 mb-2" />
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400 text-center" x-text="fileName"></span>
+                    <input x-ref="fileInput" type="file" class="hidden" @change="onFileChange($event)">
+                </label>
+
+                {{-- Buttons --}}
+                <div class="flex gap-2">
+                    <button
+                        @click="upload()"
+                        :disabled="!file || uploading"
+                        class="flex-1 py-2 px-4 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <template x-if="!uploading">
                             <flux:icon icon="arrow-up-tray" class="size-3.5" />
-                            Upload to Gofile
-                        </button>
-                        <button type="reset" onclick="clearFile(this.closest('form'))" class="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 text-xs font-bold rounded-xl transition">✕</button>
+                        </template>
+                        <template x-if="uploading">
+                            <svg class="animate-spin size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                        </template>
+                        <span x-text="uploading ? 'Uploading...' : 'Upload to Gofile'"></span>
+                    </button>
+                    <button @click="clear()" class="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 text-xs font-bold rounded-xl transition">✕</button>
+                </div>
+
+                {{-- Result --}}
+                <template x-if="result">
+                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                        <p class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Upload Successful</p>
+                        <div class="flex items-center gap-2">
+                            <a :href="result" target="_blank" rel="noreferrer"
+                                class="flex-1 font-mono text-xs text-emerald-700 dark:text-emerald-300 break-all hover:underline"
+                                x-text="result"></a>
+                            <button @click="navigator.clipboard.writeText(result)" title="Copy link"
+                                class="shrink-0 p-1.5 bg-emerald-100 dark:bg-emerald-900/30 hover:bg-emerald-200 dark:hover:bg-emerald-800/40 rounded-lg transition">
+                                <flux:icon icon="clipboard" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                            </button>
+                        </div>
                     </div>
-                </form>
+                </template>
+                <template x-if="error">
+                    <div class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400" x-text="error"></div>
+                </template>
             </div>
 
             {{-- FileMirage --}}
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm p-5 space-y-4" x-init="setupDropzone('filemirage-input')">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm p-5 space-y-4"
+                x-data="{
+                    file: null,
+                    uploading: false,
+                    result: null,
+                    error: null,
+                    fileName: 'Drop file here or click to browse',
+                    hasFile: false,
+                    onFileChange(e) {
+                        this.file = e.target.files[0] || null;
+                        if (this.file) {
+                            const n = this.file.name;
+                            this.fileName = n.length > 40 ? n.substring(0,37)+'...' : n;
+                            this.hasFile = true;
+                        }
+                        this.result = null; this.error = null;
+                    },
+                    onDrop(e) {
+                        e.preventDefault();
+                        this.file = e.dataTransfer.files[0] || null;
+                        if (this.file) {
+                            const n = this.file.name;
+                            this.fileName = n.length > 40 ? n.substring(0,37)+'...' : n;
+                            this.hasFile = true;
+                        }
+                        this.result = null; this.error = null;
+                    },
+                    clear() {
+                        this.file = null; this.uploading = false;
+                        this.result = null; this.error = null;
+                        this.fileName = 'Drop file here or click to browse';
+                        this.hasFile = false;
+                        this.$refs.fileInput.value = '';
+                    },
+                    async upload() {
+                        if (!this.file) return;
+                        this.uploading = true; this.result = null; this.error = null;
+                        try {
+                            const fd = new FormData();
+                            fd.append('file', this.file);
+                            const r = await fetch('https://store1.filemirage.com/upload.php', { method: 'POST', body: fd });
+                            const json = await r.json();
+                            if (json.success === true && json.data?.url) {
+                                this.result = json.data.url;
+                            } else {
+                                this.error = 'Upload failed. Server did not return a valid response.';
+                            }
+                        } catch(e) {
+                            this.error = 'Upload error: ' + e.message;
+                        } finally {
+                            this.uploading = false;
+                        }
+                    }
+                }">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100">FileMirage</h3>
@@ -156,20 +295,53 @@ new #[Title('Anonymous File Upload')] class extends Component
                     </div>
                     <span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded-full uppercase">50 GB</span>
                 </div>
-                <form action="https://store1.filemirage.com/upload.php" method="POST" enctype="multipart/form-data" rel="noreferrer" target="_blank">
-                    <label class="file-drop-zone flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl p-5 cursor-pointer hover:border-violet-500 hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition has-file:border-emerald-500 dragging:border-violet-600 mb-3">
-                        <flux:icon icon="arrow-up-tray" class="size-7 text-zinc-400 mb-2" />
-                        <span class="file-name-label text-xs text-zinc-500 dark:text-zinc-400 text-center">Drop file here or click to browse</span>
-                        <input id="filemirage-input" type="file" name="file" required class="hidden">
-                    </label>
-                    <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-2 px-4 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
+
+                {{-- Dropzone --}}
+                <label
+                    class="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-5 cursor-pointer transition"
+                    :class="hasFile ? 'border-emerald-500 bg-emerald-50/20 dark:bg-emerald-900/10' : 'border-zinc-300 dark:border-zinc-700 hover:border-violet-500 hover:bg-violet-50/30 dark:hover:bg-violet-900/10'"
+                    @dragover.prevent
+                    @drop="onDrop($event)">
+                    <flux:icon icon="arrow-up-tray" class="size-7 text-zinc-400 mb-2" />
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400 text-center" x-text="fileName"></span>
+                    <input x-ref="fileInput" type="file" class="hidden" @change="onFileChange($event)">
+                </label>
+
+                {{-- Buttons --}}
+                <div class="flex gap-2">
+                    <button
+                        @click="upload()"
+                        :disabled="!file || uploading"
+                        class="flex-1 py-2 px-4 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <template x-if="!uploading">
                             <flux:icon icon="arrow-up-tray" class="size-3.5" />
-                            Upload to FileMirage
-                        </button>
-                        <button type="reset" class="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 text-xs font-bold rounded-xl transition">✕</button>
+                        </template>
+                        <template x-if="uploading">
+                            <svg class="animate-spin size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                        </template>
+                        <span x-text="uploading ? 'Uploading...' : 'Upload to FileMirage'"></span>
+                    </button>
+                    <button @click="clear()" class="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 text-xs font-bold rounded-xl transition">✕</button>
+                </div>
+
+                {{-- Result --}}
+                <template x-if="result">
+                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                        <p class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Upload Successful</p>
+                        <div class="flex items-center gap-2">
+                            <a :href="result" target="_blank" rel="noreferrer"
+                                class="flex-1 font-mono text-xs text-emerald-700 dark:text-emerald-300 break-all hover:underline"
+                                x-text="result"></a>
+                            <button @click="navigator.clipboard.writeText(result)" title="Copy link"
+                                class="shrink-0 p-1.5 bg-emerald-100 dark:bg-emerald-900/30 hover:bg-emerald-200 dark:hover:bg-emerald-800/40 rounded-lg transition">
+                                <flux:icon icon="clipboard" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                            </button>
+                        </div>
                     </div>
-                </form>
+                </template>
+                <template x-if="error">
+                    <div class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400" x-text="error"></div>
+                </template>
             </div>
 
             {{-- Anonfile --}}
@@ -554,15 +726,15 @@ new #[Title('Anonymous File Upload')] class extends Component
         {{-- Section Switcher --}}
         <div class="flex flex-wrap gap-2 mb-6">
             @foreach([
-                ['standard', '🖼', 'Standard Hosts'],
-                ['short', '♻', 'Short Retention'],
-            ] as [$key, $icon, $label])
+                ['standard', 'Standard Hosts'],
+                ['short', 'Short Retention'],
+            ] as [$key, $label])
             <button wire:click="setSection('{{ $key }}')"
                 class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold border transition
                     {{ $activeSection === $key
                         ? 'bg-violet-600 border-violet-600 text-white'
                         : 'border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-violet-400 hover:text-violet-500' }}">
-                <span>{{ $icon }}</span> {{ $label }}
+                {{ $label }}
             </button>
             @endforeach
         </div>
