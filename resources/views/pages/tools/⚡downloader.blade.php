@@ -163,24 +163,21 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                 <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
                     <!-- Thumbnail preview — hidden if image fails to load -->
                     <template x-if="item.thumb">
-                        <div class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-video overflow-hidden"
-                             x-data="{ thumbOk: true }">
+                        <div class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-video overflow-hidden">
                             <img
-                                x-show="thumbOk"
                                 :src="'/downloader/thumb?url=' + encodeURIComponent(item.thumb)"
                                 :alt="'Media preview ' + (i + 1)"
                                 loading="lazy"
-                                @error="thumbOk = false"
+                                onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-preview').style.display='flex'; const badge = this.parentNode.querySelector('.index-badge'); if(badge) badge.style.display='none';"
                                 class="w-full h-full object-cover transition duration-300 hover:scale-105" />
                             <!-- Fallback icon when image fails -->
-                            <div x-show="!thumbOk"
-                                 class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
+                            <div style="display: none;"
+                                 class="fallback-preview absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
                                 <flux:icon icon="film" class="size-8" />
                                 <span class="text-[10px] font-semibold uppercase tracking-widest">Preview unavailable</span>
                             </div>
                             <!-- Index badge -->
-                            <div x-show="thumbOk"
-                                 class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
+                            <div class="index-badge absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
                                 #<span x-text="i + 1"></span>
                             </div>
                         </div>
