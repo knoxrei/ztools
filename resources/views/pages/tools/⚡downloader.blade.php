@@ -9,7 +9,46 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 };
 ?>
 
-<div class="min-h-screen pb-16 space-y-8" x-data="downloaderApp()">
+<div class="min-h-screen pb-16 space-y-8" x-data="{
+    url: '',
+    loading: false,
+    results: [],
+    error: null,
+    hasSearched: false,
+    async fetchDownload() {
+        if (!this.url.trim()) return;
+        this.loading = true;
+        this.error = null;
+        this.results = [];
+        this.hasSearched = true;
+        try {
+            const formData = new FormData();
+            formData.append('url', this.url.trim());
+            const tokenMeta = document.querySelector('meta[name=\'csrf-token\']');
+            formData.append('_token', tokenMeta ? tokenMeta.content : '');
+            const res = await fetch('/downloader/fetch', {
+                method: 'POST',
+                body: formData,
+            });
+            const json = await res.json();
+            if (json.success) {
+                this.results = json.items;
+            } else {
+                this.error = json.message || 'Something went wrong.';
+            }
+        } catch (e) {
+            this.error = 'Network error — please try again.';
+        } finally {
+            this.loading = false;
+        }
+    },
+    reset() {
+        this.url = '';
+        this.results = [];
+        this.error = null;
+        this.hasSearched = false;
+    }
+}">
 
     <!-- Page Header -->
     <div class="flex items-center gap-3">
@@ -28,9 +67,12 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 space-y-5">
 
         <div class="space-y-1.5">
-            <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                Instagram / Media URL
-            </label>
+            <div class="flex items-center justify-between">
+                <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                    Instagram / Media URL
+                </label>
+
+            </div>
 
             <!-- URL input + download button -->
             <div class="relative flex items-center">
@@ -62,8 +104,11 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             </div>
         </div>
 
-        <div class="text-[10px] text-zinc-400 dark:text-zinc-600">
-            Powered by <span class="text-zinc-500 dark:text-zinc-400 font-semibold">Downloadgram API</span>
+        <!-- Action row -->
+        <div class="flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-600">
+            <p>
+                Powered by <span class="text-zinc-500 dark:text-zinc-400 font-semibold">Downloadgram API</span>
+            </p>
         </div>
     </div>
 
@@ -82,7 +127,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </div>
     </div>
 
-    <!-- Empty / no results state -->
+    <!-- Empty / no results state (after a search with 0 items) -->
     <div
         x-show="hasSearched && !loading && results.length === 0 && error === null"
         x-transition
@@ -115,47 +160,47 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <template x-for="(item, i) in results" :key="i">
-                <div
-                    x-data="{ thumbFailed: false }"
-                    class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-                    <!-- Thumbnail: hidden when no thumb or load fails -->
-                    <div
-                        x-show="item.thumb && !thumbFailed"
-                        class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-square overflow-hidden">
-                        <img
-                            :src="item.thumb"
-                            :alt="'Media ' + (i + 1)"
-                            loading="lazy"
-                            @error="thumbFailed = true"
-                            class="w-full h-full object-cover transition duration-300 hover:scale-105" />
-                        <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
-                            #<span x-text="i + 1"></span>
+                <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
+                    <!-- Thumbnail preview — hidden if image fails to load -->
+                    <template x-if="item.thumb">
+                        <div class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-video overflow-hidden"
+                             x-data="{ thumbOk: true }">
+                            <img
+                                x-show="thumbOk"
+                                :src="'/downloader/thumb?url=' + encodeURIComponent(item.thumb)"
+                                :alt="'Media preview ' + (i + 1)"
+                                loading="lazy"
+                                @error="thumbOk = false"
+                                class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+                            <!-- Fallback icon when image fails -->
+                            <div x-show="!thumbOk"
+                                 class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
+                                <flux:icon icon="film" class="size-8" />
+                                <span class="text-[10px] font-semibold uppercase tracking-widest">Preview unavailable</span>
+                            </div>
+                            <!-- Index badge -->
+                            <div x-show="thumbOk"
+                                 class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
+                                #<span x-text="i + 1"></span>
+                            </div>
                         </div>
-                    </div>
+                    </template>
 
                     <div class="p-4 flex flex-col gap-3 flex-1">
-                        <!-- Badge when no thumb -->
-                        <template x-if="!item.thumb || thumbFailed">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-bold rounded-full border border-zinc-200 dark:border-zinc-700">
-                                    File #<span x-text="i + 1"></span>
-                                </span>
-                            </div>
-                        </template>
                         <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 truncate" x-text="item.filename"></p>
                         <a
                             :href="item.url"
-                            download
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-violet-700 dark:text-violet-400 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 rounded-xl border border-violet-200 dark:border-violet-800/80 transition">
+                            class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition shadow-sm">
                             <flux:icon icon="arrow-down-tray" class="size-3.5" />
-                            <span x-text="item.label || 'DOWNLOAD'"></span>
+                            <span>Download</span>
                         </a>
                     </div>
                 </div>
             </template>
         </div>
+
     </div>
 
     <!-- Loading skeleton -->
@@ -185,12 +230,11 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             <p class="text-xs text-zinc-400 dark:text-zinc-600">Supports posts, reels, stories &amp; carousel images</p>
         </div>
         <div class="flex flex-wrap justify-center gap-2 pt-2">
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Posts</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Reels</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Carousel</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Videos</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Posts</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Reels</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Carousel</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Videos</span>
         </div>
     </div>
-
 
 </div>

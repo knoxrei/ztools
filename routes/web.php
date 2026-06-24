@@ -19,6 +19,7 @@ Route::livewire('/filehost', 'pages::tools.filehost')->name('filehost');
 Route::livewire('/services', 'pages::tools.services')->name('services');
 Route::livewire('/downloader', 'pages::tools.downloader')->name('downloader');
 Route::post('/downloader/fetch', [DownloaderController::class, 'fetch'])->name('downloader.fetch');
+Route::get('/downloader/thumb', [DownloaderController::class, 'thumb'])->name('downloader.thumb');
 Route::livewire('/contact', 'pages::contact')->name('contact');
 
 Route::get('/s/{code}', [ShortLinkRedirectController::class, 'handle'])->name('short-link.redirect');

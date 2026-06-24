@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 
 class DownloaderController extends Controller
@@ -66,6 +67,61 @@ class DownloaderController extends Controller
                 'success' => false,
                 'message' => 'An unexpected error occurred.',
             ], 500);
+        }
+    }
+
+    /**
+     * Proxy a thumbnail image server-side to bypass CORS/hotlink protection.
+     */
+    public function thumb(Request $request): Response|JsonResponse
+    {
+        $url = $request->query('url', '');
+
+        if (empty($url) || ! filter_var($url, FILTER_VALIDATE_URL)) {
+            return response('Bad Request', 400);
+        }
+
+        // Only allow known CDN domains
+        $allowedHosts = [
+            'scontent', 'cdninstagram.com', 'instagram.com',
+            'cdn.downloadgram.org', 'fbcdn.net',
+        ];
+
+        $host = parse_url($url, PHP_URL_HOST) ?? '';
+        $allowed = false;
+        foreach ($allowedHosts as $pattern) {
+            if (str_contains($host, $pattern)) {
+                $allowed = true;
+                break;
+            }
+        }
+
+        if (! $allowed) {
+            return response('Forbidden', 403);
+        }
+
+        try {
+            $img = Http::timeout(15)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Referer' => 'https://www.instagram.com/',
+                    'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
+                ])
+                ->get($url);
+
+            if (! $img->successful()) {
+                return response('Not Found', 404);
+            }
+
+            $contentType = $img->header('Content-Type') ?: 'image/jpeg';
+
+            return response($img->body(), 200, [
+                'Content-Type' => $contentType,
+                'Cache-Control' => 'public, max-age=3600',
+                'X-Frame-Options' => 'SAMEORIGIN',
+            ]);
+        } catch (\Throwable $e) {
+            return response('Error', 502);
         }
     }
 
