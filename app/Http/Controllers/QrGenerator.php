@@ -15,14 +15,14 @@ class QrGenerator extends Controller
     /**
      * Generate a QR code and return it as a data URI string.
      *
-     * @param string $data         The content to encode
-     * @param int    $size         Image size in pixels (default 300)
-     * @param int    $margin       Margin around QR code (default 10)
-     * @param string $fgColor      Foreground hex color e.g. '#000000'
-     * @param string $bgColor      Background hex color e.g. '#ffffff'
-     * @param string $errorLevel   ErrorCorrectionLevel value: high|medium|quartile|low
-     * @param string $format       Output format: 'png' or 'svg'
-     * @return string              Data URI (data:image/png;base64,...)
+     * @param  string  $data  The content to encode
+     * @param  int  $size  Image size in pixels (default 300)
+     * @param  int  $margin  Margin around QR code (default 10)
+     * @param  string  $fgColor  Foreground hex color e.g. '#000000'
+     * @param  string  $bgColor  Background hex color e.g. '#ffffff'
+     * @param  string  $errorLevel  ErrorCorrectionLevel value: high|medium|quartile|low
+     * @param  string  $format  Output format: 'png' or 'svg'
+     * @return string Data URI (data:image/png;base64,...)
      */
     public function generateDataUri(
         string $data,
@@ -37,8 +37,8 @@ class QrGenerator extends Controller
         $background = $this->hexToColor($bgColor);
 
         $writer = match ($format) {
-            'svg'  => new SvgWriter(),
-            default => new PngWriter(),
+            'svg' => new SvgWriter,
+            default => new PngWriter,
         };
 
         $builder = new Builder(
@@ -66,7 +66,7 @@ class QrGenerator extends Controller
         $hex = ltrim($hex, '#');
 
         if (strlen($hex) === 3) {
-            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
         }
 
         return new Color(

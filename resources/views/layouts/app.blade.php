@@ -52,6 +52,11 @@ $seo = match ($routeName) {
 'description' => 'Upload files and images anonymously to external hosting services. Choose from Gofile, Anonfile, FileMirage, Dump.li, and many more. No account required.',
 'keywords' => 'anonymous file upload, secure file host, gofile upload, anonfile, image host, onion file upload, privacy file sharing',
 ],
+'services' => [
+'title' => 'Multi Search & Service Gateways - Search Clearnet & Tor | Z-Knox',
+'description' => 'Search across multiple web services anonymously. Gateways for Search Engines, Translator, Reddit, Pinterest, Twitter, Booru, Wikipedia, Imgur, Explorer, Library, English utilities, OpenPGP, Telegram, and Onion Search.',
+'keywords' => 'multi search, service gateways, search engine, onion search, tor search, anonymous search, wikiless, redlib, nitter, simplytranslate',
+],
 'tools' => [
 'title' => 'Tools Suite - Advanced Cyber & Privacy Tools | Z-Knox',
 'description' => 'Explore the complete suite of advanced cybersecurity, privacy, and encryption utilities available on Z-Knox.',
@@ -123,7 +128,7 @@ $pageKeywords = $seo['keywords'];
     </script>
 
     <!-- JSON-LD Structured Data for WebApplication -->
-    @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost']))
+    @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services']))
     <script type="application/ld+json">
         {
             "@@context": "https://schema.org",
@@ -205,6 +210,9 @@ $pageKeywords = $seo['keywords'];
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="arrow-up-tray" :href="route('filehost')" :current="request()->routeIs('filehost')" wire:navigate>
                         {{ __('File Upload') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="magnifying-glass" :href="route('services')" :current="request()->routeIs('services')" wire:navigate>
+                        {{ __('Multi Search') }}
                     </flux:sidebar.item>
 
 

@@ -1,6 +1,5 @@
 <?php
-namespace  App\Service\DecEnc;
 
-class Encryption {
+namespace App\Service\DecEnc;
 
-}
+class Encryption {}
