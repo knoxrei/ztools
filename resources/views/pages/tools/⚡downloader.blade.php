@@ -9,69 +9,22 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 };
 ?>
 
-<div
-    class="min-h-screen pb-16 space-y-8"
-    x-data="{
-        url: '',
-        loading: false,
-        results: [],
-        error: null,
-        hasSearched: false,
+<div class="min-h-screen pb-16 space-y-8" x-data="downloaderApp()">
 
-        async fetchDownload() {
-            if (!this.url.trim()) return;
-            this.loading = true;
-            this.error = null;
-            this.results = [];
-            this.hasSearched = true;
-
-            try {
-                const formData = new FormData();
-                formData.append('url', this.url.trim());
-                formData.append('_token', document.querySelector('meta[name=csrf-token]')?.content ?? '');
-
-                const res = await fetch('/downloader/fetch', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const json = await res.json();
-
-                if (json.success) {
-                    this.results = json.items;
-                } else {
-                    this.error = json.message ?? 'Something went wrong.';
-                }
-            } catch (e) {
-                this.error = 'Network error — please try again.';
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        reset() {
-            this.url = '';
-            this.results = [];
-            this.error = null;
-            this.hasSearched = false;
-        }
-    }"
->
-
-    {{-- Page Header --}}
+    <!-- Page Header -->
     <div class="flex items-center gap-3">
         <div class="p-2 text-violet-600 dark:text-violet-400">
             <flux:icon icon="arrow-down-tray" class="size-7" />
         </div>
         <div>
-            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Instagram & Media Downloader</h1>
+            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Instagram &amp; Media Downloader</h1>
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
                 Download Instagram posts, reels, and images. Paste the post URL below and fetch your media.
             </p>
         </div>
     </div>
 
-    {{-- Input Card --}}
+    <!-- Input Card -->
     <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 space-y-5">
 
         <div class="space-y-1.5">
@@ -81,11 +34,11 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                 </label>
                 <span
                     class="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 cursor-help hover:text-violet-500 transition"
-                    title='Remove the "\" from the URL before pasting.'
+                    title="Remove the backslash from the URL before pasting."
                 >(help)</span>
             </div>
 
-            {{-- URL input + clear button --}}
+            <!-- URL input + clear button -->
             <div class="relative flex items-center">
                 <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
                     <flux:icon icon="link" class="size-4" />
@@ -110,7 +63,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             </div>
         </div>
 
-        {{-- Action row --}}
+        <!-- Action row -->
         <div class="flex flex-wrap items-center gap-3">
             <button
                 type="button"
@@ -136,7 +89,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </div>
     </div>
 
-    {{-- Error state --}}
+    <!-- Error state -->
     <div
         x-show="error !== null"
         x-transition
@@ -152,7 +105,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </div>
     </div>
 
-    {{-- Empty / no results state (after a search with 0 items) --}}
+    <!-- Empty / no results state (after a search with 0 items) -->
     <div
         x-show="hasSearched && !loading && results.length === 0 && error === null"
         x-transition
@@ -166,7 +119,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         <p class="text-xs text-zinc-400 dark:text-zinc-600">The post may be private, expired, or the URL is unsupported.</p>
     </div>
 
-    {{-- Results Grid --}}
+    <!-- Results Grid -->
     <div
         x-show="results.length > 0"
         x-transition
@@ -175,7 +128,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     >
         <div class="flex items-center justify-between">
             <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
-                Results — <span x-text="results.length"></span> file<span x-show="results.length !== 1">s</span>
+                Results &mdash; <span x-text="results.length"></span> file<span x-show="results.length !== 1">s</span>
             </h2>
             <button
                 type="button"
@@ -189,8 +142,6 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <template x-for="(item, i) in results" :key="i">
                 <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-
-                    {{-- Thumbnail --}}
                     <div class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-square overflow-hidden">
                         <template x-if="item.thumb">
                             <img
@@ -198,24 +149,19 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                                 :alt="'Media preview ' + (i + 1)"
                                 loading="lazy"
                                 class="w-full h-full object-cover transition duration-300 hover:scale-105"
-                                @error="$el.style.display='none'; $el.nextElementSibling.style.display='flex'"
                             />
                         </template>
-                        {{-- Fallback when no thumb or image fails to load --}}
                         <div
-                            :style="item.thumb ? 'display:none' : 'display:flex'"
-                            class="absolute inset-0 items-center justify-center"
+                            x-show="!item.thumb"
+                            class="absolute inset-0 flex items-center justify-center"
                         >
                             <flux:icon icon="photo" class="size-10 text-zinc-400 dark:text-zinc-700" />
                         </div>
-
-                        {{-- Item counter badge --}}
                         <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
                             #<span x-text="i + 1"></span>
                         </div>
                     </div>
 
-                    {{-- Card footer --}}
                     <div class="p-4 flex flex-col gap-3 flex-1">
                         <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 truncate" x-text="item.filename"></p>
                         <a
@@ -226,7 +172,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                             class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-violet-700 dark:text-violet-400 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 rounded-xl border border-violet-200 dark:border-violet-800/80 transition"
                         >
                             <flux:icon icon="arrow-down-tray" class="size-3.5" />
-                            <span x-text="item.label ?? 'DOWNLOAD'"></span>
+                            <span x-text="item.label || 'DOWNLOAD'"></span>
                         </a>
                     </div>
                 </div>
@@ -234,7 +180,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </div>
     </div>
 
-    {{-- Loading skeleton --}}
+    <!-- Loading skeleton -->
     <div x-show="loading" x-transition class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" x-cloak>
         <template x-for="n in 3" :key="n">
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden animate-pulse">
@@ -247,7 +193,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </template>
     </div>
 
-    {{-- Idle placeholder --}}
+    <!-- Idle placeholder -->
     <div
         x-show="!hasSearched && !loading"
         x-transition
@@ -259,7 +205,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </div>
         <div class="space-y-1">
             <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Paste an Instagram URL above</p>
-            <p class="text-xs text-zinc-400 dark:text-zinc-600">Supports posts, reels, stories & carousel images</p>
+            <p class="text-xs text-zinc-400 dark:text-zinc-600">Supports posts, reels, stories &amp; carousel images</p>
         </div>
         <div class="flex flex-wrap justify-center gap-2 pt-2">
             <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Posts</span>
@@ -270,3 +216,54 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     </div>
 
 </div>
+
+<script>
+function downloaderApp() {
+    return {
+        url: '',
+        loading: false,
+        results: [],
+        error: null,
+        hasSearched: false,
+
+        async fetchDownload() {
+            if (!this.url.trim()) return;
+            this.loading = true;
+            this.error = null;
+            this.results = [];
+            this.hasSearched = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('url', this.url.trim());
+                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                formData.append('_token', tokenMeta ? tokenMeta.content : '');
+
+                const res = await fetch('/downloader/fetch', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const json = await res.json();
+
+                if (json.success) {
+                    this.results = json.items;
+                } else {
+                    this.error = json.message || 'Something went wrong.';
+                }
+            } catch (e) {
+                this.error = 'Network error — please try again.';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        reset() {
+            this.url = '';
+            this.results = [];
+            this.error = null;
+            this.hasSearched = false;
+        }
+    };
+}
+</script>
