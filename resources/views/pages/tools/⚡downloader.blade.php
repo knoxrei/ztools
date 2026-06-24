@@ -9,7 +9,46 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 };
 ?>
 
-<div class="min-h-screen pb-16 space-y-8" x-data="downloaderApp()">
+<div class="min-h-screen pb-16 space-y-8" x-data="{
+    url: '',
+    loading: false,
+    results: [],
+    error: null,
+    hasSearched: false,
+    async fetchDownload() {
+        if (!this.url.trim()) return;
+        this.loading = true;
+        this.error = null;
+        this.results = [];
+        this.hasSearched = true;
+        try {
+            const formData = new FormData();
+            formData.append('url', this.url.trim());
+            const tokenMeta = document.querySelector('meta[name=\'csrf-token\']');
+            formData.append('_token', tokenMeta ? tokenMeta.content : '');
+            const res = await fetch('/downloader/fetch', {
+                method: 'POST',
+                body: formData,
+            });
+            const json = await res.json();
+            if (json.success) {
+                this.results = json.items;
+            } else {
+                this.error = json.message || 'Something went wrong.';
+            }
+        } catch (e) {
+            this.error = 'Network error — please try again.';
+        } finally {
+            this.loading = false;
+        }
+    },
+    reset() {
+        this.url = '';
+        this.results = [];
+        this.error = null;
+        this.hasSearched = false;
+    }
+}">
 
     <!-- Page Header -->
     <div class="flex items-center gap-3">
@@ -192,54 +231,3 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     </div>
 
 </div>
-
-<script>
-    function downloaderApp() {
-        return {
-            url: '',
-            loading: false,
-            results: [],
-            error: null,
-            hasSearched: false,
-
-            async fetchDownload() {
-                if (!this.url.trim()) return;
-                this.loading = true;
-                this.error = null;
-                this.results = [];
-                this.hasSearched = true;
-
-                try {
-                    const formData = new FormData();
-                    formData.append('url', this.url.trim());
-                    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-                    formData.append('_token', tokenMeta ? tokenMeta.content : '');
-
-                    const res = await fetch('/downloader/fetch', {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    const json = await res.json();
-
-                    if (json.success) {
-                        this.results = json.items;
-                    } else {
-                        this.error = json.message || 'Something went wrong.';
-                    }
-                } catch (e) {
-                    this.error = 'Network error — please try again.';
-                } finally {
-                    this.loading = false;
-                }
-            },
-
-            reset() {
-                this.url = '';
-                this.results = [];
-                this.error = null;
-                this.hasSearched = false;
-            }
-        };
-    }
-</script>
