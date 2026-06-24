@@ -35,7 +35,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 
             </div>
 
-            <!-- URL input + clear button -->
+            <!-- URL input -->
             <div class="relative flex items-center">
                 <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
                     <flux:icon icon="link" class="size-4" />
@@ -44,17 +44,8 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     type="text"
                     name="url"
                     x-model="url"
-                    @keydown.enter="fetchDownload()"
                     placeholder="instagram.com/p/ABC123  or  instagram.com/reel/..."
-                    class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
-                <button
-                    type="button"
-                    x-show="url.length > 0"
-                    @click="reset()"
-                    class="absolute right-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition"
-                    title="Clear">
-                    <flux:icon icon="x-mark" class="size-4" />
-                </button>
+                    class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
             </div>
         </div>
 
