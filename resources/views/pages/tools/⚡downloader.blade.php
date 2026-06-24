@@ -200,8 +200,6 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     </div>
 
 </div>
-
-@script
 <script>
     Alpine.data('downloaderApp', () => ({
         url: '',
@@ -246,4 +244,3 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         }
     }));
 </script>
-@endscript
