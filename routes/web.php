@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DownloaderController;
 use App\Http\Controllers\ShortLinkRedirectController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,8 @@ Route::livewire('/support', 'pages::support')->name('support');
 Route::livewire('/url-checker', 'pages::tools.url-checker')->name('url-checker');
 Route::livewire('/filehost', 'pages::tools.filehost')->name('filehost');
 Route::livewire('/services', 'pages::tools.services')->name('services');
+Route::livewire('/downloader', 'pages::tools.downloader')->name('downloader');
+Route::post('/downloader/fetch', [DownloaderController::class, 'fetch'])->name('downloader.fetch');
 Route::livewire('/contact', 'pages::contact')->name('contact');
 
 Route::get('/s/{code}', [ShortLinkRedirectController::class, 'handle'])->name('short-link.redirect');

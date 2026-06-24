@@ -2,63 +2,10 @@
 
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Illuminate\Support\Facades\Http;
 
 new #[Title('Multi Search & Service Gateways')] class extends Component
 {
-    public $downloadResult = null;
-    public $downloadError = null;
-
-    public function downloadInstagram($url)
-    {
-        $this->downloadResult = null;
-        $this->downloadError = null;
-
-        if (empty($url)) {
-            $this->downloadError = 'Please enter a valid Instagram URL.';
-            return;
-        }
-
-        try {
-            $response = Http::asForm()->post('https://api.downloadgram.org/media', [
-                'url' => $url,
-                'submit' => '',
-            ]);
-
-            if ($response->failed()) {
-                $this->downloadError = 'Failed to connect to the downloader service.';
-                return;
-            }
-
-            $html = $response->body();
-
-            $imgSrc = null;
-            $downloadUrl = null;
-
-            // Parse img src and a href
-            if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $html, $imgMatches)) {
-                $imgSrc = $imgMatches[1];
-            }
-
-            if (preg_match('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>\s*DOWNLOAD\s*<\/a>/i', $html, $aMatches)) {
-                $downloadUrl = $aMatches[1];
-            } elseif (preg_match('/<a[^>]+href=["\']([^"\']+)["\']/i', $html, $aMatches)) {
-                $downloadUrl = $aMatches[1];
-            }
-
-            if (!$downloadUrl) {
-                $this->downloadError = 'Unable to extract download link. Please ensure the link is public and correct.';
-                return;
-            }
-
-            $this->downloadResult = [
-                'image' => $imgSrc,
-                'download' => $downloadUrl,
-            ];
-        } catch (\Exception $e) {
-            $this->downloadError = 'An error occurred: ' . $e->getMessage();
-        }
-    }
+    // Single File Component logic
 };
 ?>
 
@@ -788,7 +735,9 @@ new #[Title('Multi Search & Service Gateways')] class extends Component
                     <h3 class="text-xs font-bold text-zinc-700 dark:text-zinc-200 uppercase tracking-widest">Instagram & Media Downloader</h3>
                 </div>
 
-                <form @submit.prevent="$wire.downloadInstagram(query)" class="space-y-4">
+                <form action="https://api.downloadgram.org/media" method="POST" rel="noreferrer" target="_blank" class="space-y-4">
+                    <input type="hidden" name="submit" hidden="" />
+                    
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">Instagram Post / Reel / Image URL</label>
@@ -811,60 +760,12 @@ new #[Title('Multi Search & Service Gateways')] class extends Component
                         </div>
                     </div>
 
-                    <button 
+                    <input 
                         type="submit" 
-                        class="w-full px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 rounded-xl border border-zinc-200 dark:border-zinc-800/80 cursor-pointer transition text-center flex items-center justify-center gap-2">
-                        <svg wire:loading wire:target="downloadInstagram" class="animate-spin h-3 w-3 text-zinc-700 dark:text-zinc-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>Download</span>
-                    </button>
+                        value="Download" 
+                        class="w-full px-3 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 rounded-xl border border-zinc-200 dark:border-zinc-800/80 cursor-pointer transition text-center" />
                 </form>
             </div>
-
-            {{-- Instagram Downloader Result --}}
-            @if ($downloadResult || $downloadError)
-                <div class="col-span-full bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                        <div class="flex items-center gap-2.5">
-                            <div class="p-1.5 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
-                                <flux:icon icon="arrow-down-tray" class="size-4" />
-                            </div>
-                            <h3 class="text-xs font-bold text-zinc-700 dark:text-zinc-200 uppercase tracking-widest text-violet-700 dark:text-violet-400">Download Result</h3>
-                        </div>
-                        <button type="button" wire:click="$set('downloadResult', null); $set('downloadError', null);" class="text-[10px] font-bold text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition">
-                            Clear Result
-                        </button>
-                    </div>
-
-                    @if ($downloadError)
-                        <div class="p-4 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/80 text-xs text-red-600 dark:text-red-400 font-medium">
-                            {{ $downloadError }}
-                        </div>
-                    @endif
-
-                    @if ($downloadResult)
-                        <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                            @if ($downloadResult['image'])
-                                <div class="w-full md:w-48 aspect-square rounded-xl overflow-hidden bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center">
-                                    <img src="{{ $downloadResult['image'] }}" alt="Instagram Content Preview" class="w-full h-full object-cover" loading="lazy" />
-                                </div>
-                            @endif
-                            <div class="flex-1 space-y-4 w-full text-center md:text-left">
-                                <div class="space-y-1">
-                                    <h4 class="text-sm font-bold text-zinc-800 dark:text-zinc-100">Media file processed successfully</h4>
-                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Your download is ready. Click the button below to fetch the media.</p>
-                                </div>
-                                <a href="{{ $downloadResult['download'] }}" download rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600 rounded-xl transition shadow-sm">
-                                    <flux:icon icon="arrow-down-tray" class="size-4" />
-                                    Download Media
-                                </a>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            @endif
 
 
         </div>

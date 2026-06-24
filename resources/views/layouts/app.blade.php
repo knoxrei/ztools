@@ -53,9 +53,14 @@ $seo = match ($routeName) {
 'keywords' => 'anonymous file upload, secure file host, gofile upload, anonfile, image host, onion file upload, privacy file sharing',
 ],
 'services' => [
-'title' => 'Multi Search & Service Gateways - Search Clearnet & Tor | Z-Knox',
-'description' => 'Search across multiple web services anonymously. Gateways for Search Engines, Translator, Reddit, Pinterest, Twitter, Booru, Wikipedia, Imgur, Explorer, Library, English utilities, OpenPGP, Telegram, and Onion Search.',
-'keywords' => 'multi search, service gateways, search engine, onion search, tor search, anonymous search, wikiless, redlib, nitter, simplytranslate',
+    'title'       => 'Multi Search & Service Gateways - Search Clearnet & Tor | Z-Knox',
+    'description' => 'Search across multiple web services anonymously. Gateways for Search Engines, Translator, Reddit, Pinterest, Twitter, Booru, Wikipedia, Imgur, Explorer, Library, English utilities, OpenPGP, Telegram, and Onion Search.',
+    'keywords'    => 'multi search, service gateways, search engine, onion search, tor search, anonymous search, wikiless, redlib, nitter, simplytranslate',
+],
+'downloader' => [
+    'title'       => 'Instagram & Media Downloader - Download Posts, Reels & Images | Z-Knox',
+    'description' => 'Download Instagram posts, reels, carousel images, and videos directly. Fast, anonymous media downloader powered by Downloadgram API.',
+    'keywords'    => 'instagram downloader, reels downloader, instagram video download, instagram image save, media downloader',
 ],
 'tools' => [
 'title' => 'Tools Suite - Advanced Cyber & Privacy Tools | Z-Knox',
@@ -94,6 +99,7 @@ $pageKeywords = $seo['keywords'];
     <meta name="description" content="{{ $pageDescription }}">
     <meta name="keywords" content="{{ $pageKeywords }}">
     <meta name="robots" content="index, follow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ request()->url() }}" />
@@ -128,7 +134,7 @@ $pageKeywords = $seo['keywords'];
     </script>
 
     <!-- JSON-LD Structured Data for WebApplication -->
-    @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services']))
+    @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services', 'downloader']))
     <script type="application/ld+json">
         {
             "@@context": "https://schema.org",
@@ -213,6 +219,9 @@ $pageKeywords = $seo['keywords'];
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="magnifying-glass" :href="route('services')" :current="request()->routeIs('services')" wire:navigate>
                         {{ __('Multi Search') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="arrow-down-tray" :href="route('downloader')" :current="request()->routeIs('downloader')" wire:navigate>
+                        {{ __('Downloader') }}
                     </flux:sidebar.item>
 
 

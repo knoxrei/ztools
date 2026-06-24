@@ -206,6 +206,23 @@ new #[Title('Tools Suite')] class extends Component
                 Launch Multi Search
             </flux:button>
         </div>
+        {{-- 11. Instagram & Media Downloader --}}
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm p-5 flex flex-col justify-between space-y-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition">
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
+                        <flux:icon icon="arrow-down-tray" class="size-4" />
+                    </div>
+                    <h3 class="text-xs font-bold text-zinc-700 dark:text-zinc-200 uppercase tracking-widest">Media Downloader</h3>
+                </div>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
+                    Download Instagram posts, reels, carousel images, and videos. Paste the post URL and retrieve media files directly.
+                </p>
+            </div>
+            <flux:button :href="route('downloader')" variant="ghost" size="sm" class="w-full text-violet-600 hover:text-white dark:text-violet-400 hover:bg-violet-600 rounded-xl" wire:navigate>
+                Launch Downloader
+            </flux:button>
+        </div>
 
     </div>
 
