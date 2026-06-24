@@ -32,10 +32,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                 <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
                     Instagram / Media URL
                 </label>
-                <span
-                    class="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 cursor-help hover:text-violet-500 transition"
-                    title="Remove the backslash from the URL before pasting."
-                >(help)</span>
+
             </div>
 
             <!-- URL input + clear button -->
@@ -49,15 +46,13 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     x-model="url"
                     @keydown.enter="fetchDownload()"
                     placeholder="instagram.com/p/ABC123  or  instagram.com/reel/..."
-                    class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600"
-                />
+                    class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
                 <button
                     type="button"
                     x-show="url.length > 0"
                     @click="reset()"
                     class="absolute right-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition"
-                    title="Clear"
-                >
+                    title="Clear">
                     <flux:icon icon="x-mark" class="size-4" />
                 </button>
             </div>
@@ -69,8 +64,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                 type="button"
                 @click="fetchDownload()"
                 :disabled="loading || !url.trim()"
-                class="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition shadow-sm"
-            >
+                class="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition shadow-sm">
                 <template x-if="loading">
                     <svg class="animate-spin size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -94,8 +88,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         x-show="error !== null"
         x-transition
         class="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/60 rounded-2xl p-5 flex items-start gap-3"
-        x-cloak
-    >
+        x-cloak>
         <div class="p-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 shrink-0 mt-0.5">
             <flux:icon icon="exclamation-triangle" class="size-4" />
         </div>
@@ -110,8 +103,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         x-show="hasSearched && !loading && results.length === 0 && error === null"
         x-transition
         class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center space-y-3"
-        x-cloak
-    >
+        x-cloak>
         <div class="mx-auto w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
             <flux:icon icon="photo" class="size-5 text-zinc-400" />
         </div>
@@ -124,8 +116,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         x-show="results.length > 0"
         x-transition
         class="space-y-4"
-        x-cloak
-    >
+        x-cloak>
         <div class="flex items-center justify-between">
             <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
                 Results &mdash; <span x-text="results.length"></span> file<span x-show="results.length !== 1">s</span>
@@ -133,8 +124,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             <button
                 type="button"
                 @click="reset()"
-                class="text-[10px] font-bold text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition"
-            >
+                class="text-[10px] font-bold text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition">
                 Clear
             </button>
         </div>
@@ -148,13 +138,11 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                                 :src="item.thumb"
                                 :alt="'Media preview ' + (i + 1)"
                                 loading="lazy"
-                                class="w-full h-full object-cover transition duration-300 hover:scale-105"
-                            />
+                                class="w-full h-full object-cover transition duration-300 hover:scale-105" />
                         </template>
                         <div
                             x-show="!item.thumb"
-                            class="absolute inset-0 flex items-center justify-center"
-                        >
+                            class="absolute inset-0 flex items-center justify-center">
                             <flux:icon icon="photo" class="size-10 text-zinc-400 dark:text-zinc-700" />
                         </div>
                         <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
@@ -169,8 +157,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                             download
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-violet-700 dark:text-violet-400 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 rounded-xl border border-violet-200 dark:border-violet-800/80 transition"
-                        >
+                            class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-violet-700 dark:text-violet-400 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 rounded-xl border border-violet-200 dark:border-violet-800/80 transition">
                             <flux:icon icon="arrow-down-tray" class="size-3.5" />
                             <span x-text="item.label || 'DOWNLOAD'"></span>
                         </a>
@@ -198,8 +185,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         x-show="!hasSearched && !loading"
         x-transition
         class="bg-zinc-50 dark:bg-zinc-900/50 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center space-y-4"
-        x-cloak
-    >
+        x-cloak>
         <div class="mx-auto w-14 h-14 rounded-2xl bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center">
             <flux:icon icon="arrow-down-tray" class="size-6 text-violet-500 dark:text-violet-400" />
         </div>
@@ -218,52 +204,52 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 </div>
 
 <script>
-function downloaderApp() {
-    return {
-        url: '',
-        loading: false,
-        results: [],
-        error: null,
-        hasSearched: false,
+    function downloaderApp() {
+        return {
+            url: '',
+            loading: false,
+            results: [],
+            error: null,
+            hasSearched: false,
 
-        async fetchDownload() {
-            if (!this.url.trim()) return;
-            this.loading = true;
-            this.error = null;
-            this.results = [];
-            this.hasSearched = true;
+            async fetchDownload() {
+                if (!this.url.trim()) return;
+                this.loading = true;
+                this.error = null;
+                this.results = [];
+                this.hasSearched = true;
 
-            try {
-                const formData = new FormData();
-                formData.append('url', this.url.trim());
-                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-                formData.append('_token', tokenMeta ? tokenMeta.content : '');
+                try {
+                    const formData = new FormData();
+                    formData.append('url', this.url.trim());
+                    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                    formData.append('_token', tokenMeta ? tokenMeta.content : '');
 
-                const res = await fetch('/downloader/fetch', {
-                    method: 'POST',
-                    body: formData,
-                });
+                    const res = await fetch('/downloader/fetch', {
+                        method: 'POST',
+                        body: formData,
+                    });
 
-                const json = await res.json();
+                    const json = await res.json();
 
-                if (json.success) {
-                    this.results = json.items;
-                } else {
-                    this.error = json.message || 'Something went wrong.';
+                    if (json.success) {
+                        this.results = json.items;
+                    } else {
+                        this.error = json.message || 'Something went wrong.';
+                    }
+                } catch (e) {
+                    this.error = 'Network error — please try again.';
+                } finally {
+                    this.loading = false;
                 }
-            } catch (e) {
-                this.error = 'Network error — please try again.';
-            } finally {
-                this.loading = false;
-            }
-        },
+            },
 
-        reset() {
-            this.url = '';
-            this.results = [];
-            this.error = null;
-            this.hasSearched = false;
-        }
-    };
-}
+            reset() {
+                this.url = '';
+                this.results = [];
+                this.error = null;
+                this.hasSearched = false;
+            }
+        };
+    }
 </script>

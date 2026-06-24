@@ -74,56 +74,92 @@ class DownloaderController extends Controller
      *
      * @return array<int, array{thumb: string|null, url: string, filename: string}>
      */
-    private function parseDownloadItems(string $html): array
+    private function parseDownloadItems(string $responseBody): array
     {
         $items = [];
 
-        // Suppress libxml errors for invalid HTML
-        $dom = new \DOMDocument;
-        @$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
-        $xpath = new \DOMXPath($dom);
+        // The API returns a JavaScript string like:
+        // document['getElementById']('div_download')['innerHTML']='<section\x20class=\x22...';
+        // We need to decode the hex escapes (\x22 -> ", \x20 -> space, etc)
+        $decodedBody = preg_replace_callback('/\\\\x([0-9A-Fa-f]{2})/', function ($m) {
+            return chr(hexdec($m[1]));
+        }, $responseBody);
 
-        // Find the #downloadhere container
-        $downloadHere = $xpath->query('//*[@id="downloadhere"]');
-        if ($downloadHere->length === 0) {
-            return [];
+        // Also decode \/ to /
+        $decodedBody = str_replace('\/', '/', $decodedBody);
+
+        // Try to extract the HTML part from the JS assignment
+        $htmlToParse = $decodedBody;
+        if (preg_match("/\['innerHTML'\]\s*=\s*'(.*?)'/s", $decodedBody, $matches)) {
+            $htmlToParse = $matches[1];
         }
 
-        // Each .row inside #downloadhere is one media item
-        $rows = $xpath->query('.//*[contains(@class,"row")]', $downloadHere->item(0));
+        // Suppress libxml errors for invalid HTML
+        $dom = new \DOMDocument;
+        @$dom->loadHTML('<?xml encoding="utf-8" ?><div>'.$htmlToParse.'</div>');
+        $xpath = new \DOMXPath($dom);
 
-        foreach ($rows as $row) {
-            $item = [
-                'thumb' => null,
-                'url' => '',
-                'filename' => 'download',
-            ];
+        // Find all anchor tags that might be downloads
+        $links = $xpath->query('//a[@href]');
 
-            // Thumbnail <img>
-            $imgs = $xpath->query('.//img', $row);
-            if ($imgs->length > 0) {
-                $item['thumb'] = $imgs->item(0)->getAttribute('src');
+        foreach ($links as $a) {
+            $url = $a->getAttribute('href');
+
+            // Skip invalid or irrelevant links like "/" or non-CDN links if they exist
+            if (empty($url) || $url === '/' || $url === 'https://downloadgram.org/') {
+                continue;
             }
 
-            // Download <a> with download attribute
-            $links = $xpath->query('.//a[@download]', $row);
-            if ($links->length > 0) {
-                $a = $links->item(0);
-                $item['url'] = $a->getAttribute('href');
-                $text = trim($a->textContent);
-                $item['label'] = $text ?: 'DOWNLOAD';
+            $item = [
+                'thumb' => null,
+                'url' => $url,
+                'filename' => 'download',
+                'label' => trim($a->textContent) ?: 'DOWNLOAD',
+            ];
 
-                // Derive a clean filename from the CDN token if possible
-                if ($item['url']) {
-                    $item['filename'] = basename(parse_url($item['url'], PHP_URL_PATH)) ?: 'download';
+            // Try to find a related image by going up the DOM tree and finding the first img
+            $parent = $a->parentNode;
+            while ($parent && $parent->nodeName !== 'div' && $parent->nodeName !== 'section' && $parent->nodeName !== 'body') {
+                $parent = $parent->parentNode;
+            }
+
+            if ($parent) {
+                $imgs = $xpath->query('.//img[@src]', $parent);
+                if ($imgs->length > 0) {
+                    $item['thumb'] = $imgs->item(0)->getAttribute('src');
                 }
             }
 
-            if ($item['url']) {
-                $items[] = $item;
+            // Fallback: Just get the first image in the whole document
+            if (! $item['thumb']) {
+                $allImgs = $xpath->query('//img[@src]');
+                if ($allImgs->length > 0) {
+                    $item['thumb'] = $allImgs->item(0)->getAttribute('src');
+                }
             }
+
+            // Derive a clean filename from the CDN token if possible
+            if (strpos($url, 'token=') !== false) {
+                $parts = explode('.', explode('token=', $url)[1] ?? '');
+                $payload = base64_decode($parts[1] ?? '');
+                if (preg_match('/"filename"\s*:\s*"([^"]+)"/', $payload, $m)) {
+                    $item['filename'] = $m[1];
+                } else {
+                    $item['filename'] = basename(parse_url($item['url'], PHP_URL_PATH)) ?: 'download';
+                }
+            } else {
+                $item['filename'] = basename(parse_url($item['url'], PHP_URL_PATH)) ?: 'download';
+            }
+
+            $items[] = $item;
         }
 
-        return $items;
+        // Remove duplicates by URL
+        $unique = [];
+        foreach ($items as $item) {
+            $unique[$item['url']] = $item;
+        }
+
+        return array_values($unique);
     }
 }
