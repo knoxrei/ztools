@@ -28,12 +28,9 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 space-y-5">
 
         <div class="space-y-1.5">
-            <div class="flex items-center justify-between">
-                <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                    Instagram / Media URL
-                </label>
-
-            </div>
+            <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                Instagram / Media URL
+            </label>
 
             <!-- URL input + download button -->
             <div class="relative flex items-center">
@@ -65,11 +62,8 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             </div>
         </div>
 
-        <!-- Action row -->
-        <div class="flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-600">
-            <p>
-                Powered by <span class="text-zinc-500 dark:text-zinc-400 font-semibold">Downloadgram API</span>
-            </p>
+        <div class="text-[10px] text-zinc-400 dark:text-zinc-600">
+            Powered by <span class="text-zinc-500 dark:text-zinc-400 font-semibold">Downloadgram API</span>
         </div>
     </div>
 
@@ -88,7 +82,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         </div>
     </div>
 
-    <!-- Empty / no results state (after a search with 0 items) -->
+    <!-- Empty / no results state -->
     <div
         x-show="hasSearched && !loading && results.length === 0 && error === null"
         x-transition
@@ -124,7 +118,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                 <div
                     x-data="{ thumbFailed: false }"
                     class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-                    <!-- Thumbnail area: hidden entirely if image fails to load -->
+                    <!-- Thumbnail: hidden when no thumb or load fails -->
                     <div
                         x-show="item.thumb && !thumbFailed"
                         class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-square overflow-hidden">
@@ -140,7 +134,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     </div>
 
                     <div class="p-4 flex flex-col gap-3 flex-1">
-                        <!-- Item index badge when no thumb -->
+                        <!-- Badge when no thumb -->
                         <template x-if="!item.thumb || thumbFailed">
                             <div class="flex items-center gap-2">
                                 <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-bold rounded-full border border-zinc-200 dark:border-zinc-700">
@@ -161,7 +155,6 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     </div>
                 </div>
             </template>
-
         </div>
     </div>
 
@@ -192,13 +185,18 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             <p class="text-xs text-zinc-400 dark:text-zinc-600">Supports posts, reels, stories &amp; carousel images</p>
         </div>
         <div class="flex flex-wrap justify-center gap-2 pt-2">
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Posts</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Reels</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Carousel</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Videos</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Posts</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Reels</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Carousel</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Videos</span>
         </div>
     </div>
-    <script>
+
+</div>
+
+@verbatim
+<script>
+    document.addEventListener('alpine:init', () => {
         Alpine.data('downloaderApp', () => ({
             url: '',
             loading: false,
@@ -228,7 +226,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                         this.error = json.message || 'Something went wrong.';
                     }
                 } catch (e) {
-                    this.error = 'Network error \u2014 please try again.';
+                    this.error = 'Network error - please try again.';
                 } finally {
                     this.loading = false;
                 }
@@ -241,5 +239,6 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                 this.hasSearched = false;
             }
         }));
-    </script>
-</div>
+    });
+</script>
+@endverbatim
