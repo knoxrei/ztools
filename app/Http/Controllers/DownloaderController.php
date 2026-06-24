@@ -110,10 +110,25 @@ class DownloaderController extends Controller
                 continue;
             }
 
+            // Derive a clean filename from the CDN token if possible (do before resolving URL)
+            $filename = 'download';
+            if (strpos($url, 'token=') !== false) {
+                $tokenPart = explode('token=', $url)[1] ?? '';
+                $parts = explode('.', $tokenPart);
+                $payload = isset($parts[1]) ? base64_decode(strtr($parts[1], '-_', '+/')) : '';
+                if ($payload && preg_match('/"filename"\s*:\s*"([^"]+)"/', $payload, $m)) {
+                    $filename = $m[1];
+                } else {
+                    $filename = basename(parse_url($url, PHP_URL_PATH)) ?: 'download';
+                }
+            } else {
+                $filename = basename(parse_url($url, PHP_URL_PATH)) ?: 'download';
+            }
+
             $item = [
                 'thumb' => null,
-                'url' => $url,
-                'filename' => 'download',
+                'url' => $this->resolveRealUrl($url),
+                'filename' => $filename,
                 'label' => trim($a->textContent) ?: 'DOWNLOAD',
             ];
 
@@ -123,32 +138,24 @@ class DownloaderController extends Controller
                 $parent = $parent->parentNode;
             }
 
+            $thumb = null;
             if ($parent) {
                 $imgs = $xpath->query('.//img[@src]', $parent);
                 if ($imgs->length > 0) {
-                    $item['thumb'] = $imgs->item(0)->getAttribute('src');
+                    $thumb = $imgs->item(0)->getAttribute('src');
                 }
             }
 
             // Fallback: Just get the first image in the whole document
-            if (! $item['thumb']) {
+            if (! $thumb) {
                 $allImgs = $xpath->query('//img[@src]');
                 if ($allImgs->length > 0) {
-                    $item['thumb'] = $allImgs->item(0)->getAttribute('src');
+                    $thumb = $allImgs->item(0)->getAttribute('src');
                 }
             }
 
-            // Derive a clean filename from the CDN token if possible
-            if (strpos($url, 'token=') !== false) {
-                $parts = explode('.', explode('token=', $url)[1] ?? '');
-                $payload = base64_decode($parts[1] ?? '');
-                if (preg_match('/"filename"\s*:\s*"([^"]+)"/', $payload, $m)) {
-                    $item['filename'] = $m[1];
-                } else {
-                    $item['filename'] = basename(parse_url($item['url'], PHP_URL_PATH)) ?: 'download';
-                }
-            } else {
-                $item['filename'] = basename(parse_url($item['url'], PHP_URL_PATH)) ?: 'download';
+            if ($thumb) {
+                $item['thumb'] = $this->resolveRealUrl($thumb);
             }
 
             $items[] = $item;
@@ -161,5 +168,28 @@ class DownloaderController extends Controller
         }
 
         return array_values($unique);
+    }
+
+    /**
+     * Decode JWT token parameter from Downloadgram CDN URL to resolve the direct media source URL.
+     * This bypasses client-side ad blockers blocking downloadgram.org CDN subdomains.
+     */
+    private function resolveRealUrl(string $url): string
+    {
+        if (strpos($url, 'token=') !== false) {
+            $tokenPart = explode('token=', $url)[1] ?? '';
+            $parts = explode('.', $tokenPart);
+            if (count($parts) >= 2) {
+                $payload = base64_decode(strtr($parts[1], '-_', '+/'));
+                if ($payload) {
+                    $data = json_decode($payload, true);
+                    if (! empty($data['url'])) {
+                        return $data['url'];
+                    }
+                }
+            }
+        }
+
+        return $url;
     }
 }
