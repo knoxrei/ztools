@@ -15,12 +15,14 @@ new #[Title('Instagram & Media Downloader')] class extends Component
     results: [],
     error: null,
     hasSearched: false,
+    playingIndex: null,
     async fetchDownload() {
         if (!this.url.trim()) return;
         this.loading = true;
         this.error = null;
         this.results = [];
         this.hasSearched = true;
+        this.playingIndex = null;
         try {
             const formData = new FormData();
             formData.append('url', this.url.trim());
@@ -47,6 +49,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
         this.results = [];
         this.error = null;
         this.hasSearched = false;
+        this.playingIndex = null;
     }
 }">
 
@@ -164,29 +167,78 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     <!-- Thumbnail preview — hidden if image fails to load -->
                     <template x-if="item.thumb">
                         <div class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-video overflow-hidden">
-                            <img
-                                :src="'/downloader/thumb?url=' + encodeURIComponent(item.thumb)"
-                                :alt="'Media preview ' + (i + 1)"
-                                loading="lazy"
-                                onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-preview').style.display='flex'; const badge = this.parentNode.querySelector('.index-badge'); if(badge) badge.style.display='none';"
-                                class="w-full h-full object-cover transition duration-300 hover:scale-105" />
-                            <!-- Fallback icon when image fails -->
-                            <div style="display: none;"
-                                 class="fallback-preview absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
-                                <flux:icon icon="film" class="size-8" />
-                                <span class="text-[10px] font-semibold uppercase tracking-widest">Preview unavailable</span>
-                            </div>
-                            <!-- Index badge -->
-                            <div class="index-badge absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
-                                #<span x-text="i + 1"></span>
-                            </div>
+                            <!-- Inline video player when play button is clicked -->
+                            <template x-if="playingIndex === i">
+                                <div class="w-full h-full bg-black relative">
+                                    <video
+                                        :src="item.url"
+                                        controls
+                                        autoplay
+                                        class="w-full h-full"
+                                        style="object-fit: contain;">
+                                    </video>
+                                    <button
+                                        type="button"
+                                        @click="playingIndex = null"
+                                        class="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 rounded-full text-white transition"
+                                        title="Close Preview">
+                                        <flux:icon icon="x-mark" class="size-3.5" />
+                                    </button>
+                                </div>
+                            </template>
+
+                            <!-- Static thumbnail & video play overlay -->
+                            <template x-if="playingIndex !== i">
+                                <div class="relative w-full h-full">
+                                    <img
+                                        :src="'/downloader/thumb?url=' + encodeURIComponent(item.thumb)"
+                                        :alt="'Media preview ' + (i + 1)"
+                                        loading="lazy"
+                                        onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-preview').style.display='flex'; const badge = this.parentNode.querySelector('.index-badge'); if(badge) badge.style.display='none'; const playBtn = this.parentNode.querySelector('.play-btn'); if(playBtn) playBtn.style.display='none';"
+                                        class="w-full h-full object-cover transition duration-300 hover:scale-105" />
+                                    
+                                    <!-- Play overlay for reels/videos -->
+                                    <template x-if="item.url.includes('.mp4') || item.filename.includes('.mp4') || (item.label && item.label.toLowerCase().includes('video'))">
+                                        <button
+                                            type="button"
+                                            @click="playingIndex = i"
+                                            class="play-btn absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/40 transition group"
+                                            title="Play Video Preview">
+                                            <div class="p-3 bg-white/95 dark:bg-zinc-900/95 rounded-full shadow-lg text-violet-600 dark:text-violet-400 group-hover:scale-110 transition duration-300">
+                                                <flux:icon icon="play" class="size-6 fill-current" />
+                                            </div>
+                                        </button>
+                                    </template>
+
+                                    <!-- Fallback icon when image fails -->
+                                    <div style="display: none;"
+                                         class="fallback-preview absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
+                                        <flux:icon icon="film" class="size-8" />
+                                        <span class="text-[10px] font-semibold uppercase tracking-widest">Preview unavailable</span>
+                                    </div>
+                                    <!-- Index badge -->
+                                    <div class="index-badge absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
+                                        #<span x-text="i + 1"></span>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </template>
 
                     <div class="p-4 flex flex-col gap-3 flex-1">
-                        <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 truncate" x-text="item.filename"></p>
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 truncate flex-1" x-text="item.filename"></p>
+                            <!-- Badge specifying media type -->
+                            <span 
+                                x-text="item.url.includes('.mp4') || item.filename.includes('.mp4') || (item.label && item.label.toLowerCase().includes('video')) ? 'Video/Reel' : 'Image'"
+                                :class="item.url.includes('.mp4') || item.filename.includes('.mp4') || (item.label && item.label.toLowerCase().includes('video')) 
+                                    ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-800/40' 
+                                    : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/40'"
+                                class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider shrink-0">
+                            </span>
+                        </div>
                         <a
-                            :href="item.url"
+                            :href="'/downloader/download?url=' + encodeURIComponent(item.url) + '&filename=' + encodeURIComponent(item.filename)"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition shadow-sm">

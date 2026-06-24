@@ -126,6 +126,68 @@ class DownloaderController extends Controller
     }
 
     /**
+     * Proxy a file download and stream it directly to bypass inline browser play and CORS.
+     */
+    public function download(Request $request): Response|JsonResponse
+    {
+        $url = $request->query('url', '');
+        $filename = $request->query('filename', '');
+
+        if (empty($url) || ! filter_var($url, FILTER_VALIDATE_URL)) {
+            return response('Bad Request', 400);
+        }
+
+        if (empty($filename)) {
+            $filename = basename(parse_url($url, PHP_URL_PATH)) ?: 'download';
+        }
+
+        // Only allow known CDN domains
+        $allowedHosts = [
+            'scontent', 'cdninstagram.com', 'instagram.com',
+            'cdn.downloadgram.org', 'fbcdn.net',
+        ];
+
+        $host = parse_url($url, PHP_URL_HOST) ?? '';
+        $allowed = false;
+        foreach ($allowedHosts as $pattern) {
+            if (str_contains($host, $pattern)) {
+                $allowed = true;
+                break;
+            }
+        }
+
+        if (! $allowed) {
+            return response('Forbidden', 403);
+        }
+
+        // Sanitize filename
+        $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $filename);
+
+        try {
+            $response = Http::timeout(60)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Referer' => 'https://www.instagram.com/',
+                ])
+                ->get($url);
+
+            if (! $response->successful()) {
+                return response('Failed to retrieve file from source', 502);
+            }
+
+            $contentType = $response->header('Content-Type') ?: 'application/octet-stream';
+
+            return response($response->body(), 200, [
+                'Content-Type' => $contentType,
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, private',
+            ]);
+        } catch (\Throwable $e) {
+            return response('Error downloading file', 500);
+        }
+    }
+
+    /**
      * Parse download items (thumbnail + download link) from Downloadgram HTML response.
      *
      * @return array<int, array{thumb: string|null, url: string, filename: string}>
