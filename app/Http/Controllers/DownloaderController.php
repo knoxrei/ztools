@@ -19,6 +19,13 @@ class DownloaderController extends Controller
             'url' => ['required', 'string', 'max:2048'],
         ]);
 
+        $url = $validated['url'];
+
+        // Automatically route to TikTok if the URL contains tiktok.com
+        if (str_contains($url, 'tiktok.com')) {
+            return $this->fetchTiktok($request);
+        }
+
         $apiUrl = 'https://api.downloadgram.org/media';
 
         try {
@@ -30,7 +37,7 @@ class DownloaderController extends Controller
                 ])
                 ->asForm()
                 ->post($apiUrl, [
-                    'url' => $validated['url'],
+                    'url' => $url,
                     'submit' => '',
                 ]);
 
@@ -85,6 +92,7 @@ class DownloaderController extends Controller
         $allowedHosts = [
             'scontent', 'cdninstagram.com', 'instagram.com',
             'cdn.downloadgram.org', 'fbcdn.net',
+            'ssstik', 'ssscdn.io', 'tiktokcdn.com', 'tiktok.com', 'byteoversea.com', 'ibyteimg.com'
         ];
 
         $host = parse_url($url, PHP_URL_HOST) ?? '';
@@ -100,11 +108,16 @@ class DownloaderController extends Controller
             return response('Forbidden', 403);
         }
 
+        $referer = 'https://www.instagram.com/';
+        if (str_contains($url, 'tiktok') || str_contains($url, 'byte') || str_contains($url, 'ssstik') || str_contains($url, 'ssscdn')) {
+            $referer = 'https://www.tiktok.com/';
+        }
+
         try {
             $img = Http::timeout(15)
                 ->withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Referer' => 'https://www.instagram.com/',
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Referer' => $referer,
                     'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
                 ])
                 ->get($url);
@@ -145,6 +158,7 @@ class DownloaderController extends Controller
         $allowedHosts = [
             'scontent', 'cdninstagram.com', 'instagram.com',
             'cdn.downloadgram.org', 'fbcdn.net',
+            'ssstik', 'ssscdn.io', 'tiktokcdn.com', 'tiktok.com', 'byteoversea.com', 'ibyteimg.com'
         ];
 
         $host = parse_url($url, PHP_URL_HOST) ?? '';
@@ -163,11 +177,16 @@ class DownloaderController extends Controller
         // Sanitize filename
         $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $filename);
 
+        $referer = 'https://www.instagram.com/';
+        if (str_contains($url, 'tiktok') || str_contains($url, 'byte') || str_contains($url, 'ssstik') || str_contains($url, 'ssscdn')) {
+            $referer = 'https://www.tiktok.com/';
+        }
+
         try {
             $response = Http::timeout(60)
                 ->withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Referer' => 'https://www.instagram.com/',
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Referer' => $referer,
                 ])
                 ->get($url);
 
@@ -309,5 +328,173 @@ class DownloaderController extends Controller
         }
 
         return $url;
+    }
+
+    /**
+     * Fetch TikTok download links via ssstik.io scraping.
+     */
+    private function fetchTiktok(Request $request): JsonResponse
+    {
+        $url = $request->input('url', '');
+
+        try {
+            // 1. Get the homepage to retrieve the 'tt' token and cookies
+            $initialResponse = Http::timeout(15)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language' => 'en-US,en;q=0.5',
+                ])
+                ->get('https://ssstik.io/en');
+
+            if (! $initialResponse->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not connect to TikTok download service. Please try again later.',
+                ], 502);
+            }
+
+            $html = $initialResponse->body();
+            $cookies = $initialResponse->cookies();
+
+            // Extract the 'tt' token: s_tt = 'TOKEN_VALUE'
+            $tt = '';
+            if (preg_match('/s_tt\s*=\s*[\'"]([^\'"]+)[\'"]/', $html, $matches)) {
+                $tt = $matches[1];
+            } elseif (preg_match('/tt\s*:\s*[\'"]([^\'"]+)[\'"]/', $html, $matches)) {
+                $tt = $matches[1];
+            }
+
+            if (empty($tt)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to initialize TikTok download session. Please try again.',
+                ]);
+            }
+
+            // 2. POST to /abc?url=dl with htmx headers
+            $response = Http::timeout(25)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept' => '*/*',
+                    'Accept-Language' => 'en-US,en;q=0.5',
+                    'Referer' => 'https://ssstik.io/en',
+                    'hx-request' => 'true',
+                    'hx-target' => 'target',
+                    'hx-current-url' => 'https://ssstik.io/en',
+                    'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+                ])
+                ->withCookies($cookies->toArray(), 'ssstik.io')
+                ->asForm()
+                ->post('https://ssstik.io/abc?url=dl', [
+                    'id' => $url,
+                    'locale' => 'en',
+                    'tt' => $tt,
+                ]);
+
+            if (! $response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'TikTok download service returned an error. Check the URL and try again.',
+                ], 502);
+            }
+
+            $responseHtml = $response->body();
+
+            // 3. Parse download options
+            $items = $this->parseTiktokItems($responseHtml);
+
+            if (empty($items)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No downloadable media found. Make sure the TikTok video is public.',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'items' => $items,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing the TikTok video: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Parse TikTok download items from ssstik.io response HTML.
+     */
+    private function parseTiktokItems(string $html): array
+    {
+        $items = [];
+
+        $dom = new \DOMDocument;
+        @$dom->loadHTML('<?xml encoding="utf-8" ?><div>' . $html . '</div>');
+        $xpath = new \DOMXPath($dom);
+
+        // Find cover/thumbnail image
+        $thumb = null;
+        $imgs = $xpath->query('//img[@src]');
+        foreach ($imgs as $img) {
+            $src = $img->getAttribute('src');
+            if ($src && ! str_contains($src, 'logosmall') && ! str_contains($src, 'favicon') && ! str_contains($src, 'apple-touch-icon')) {
+                $thumb = $src;
+                break;
+            }
+        }
+
+        // Find description
+        $title = 'TikTok Video';
+        $paragraphs = $xpath->query('//p[contains(@class, "maintext")]');
+        if ($paragraphs->length > 0) {
+            $title = trim($paragraphs->item(0)->textContent);
+        } else {
+            $headings = $xpath->query('//h2 || //h3 || //p');
+            foreach ($headings as $h) {
+                $text = trim($h->textContent);
+                if (! empty($text) && strlen($text) > 10 && ! str_contains($text, 'How to download') && ! str_contains($text, 'SSSTik')) {
+                    $title = $text;
+                    break;
+                }
+            }
+        }
+
+        // Find all download links (a tags)
+        $links = $xpath->query('//a[@href]');
+        foreach ($links as $a) {
+            $href = $a->getAttribute('href');
+            $label = trim($a->textContent);
+
+            if (empty($href) || $href === '/' || str_contains($href, 'facebook.com') || str_contains($href, 'twitter.com') || str_contains($href, 'play.google.com') || str_contains($href, 'apps.apple.com')) {
+                continue;
+            }
+
+            if (str_starts_with($href, '/')) {
+                $href = 'https://ssstik.io' . $href;
+            }
+
+            if (empty($label)) {
+                $label = 'Download';
+            }
+
+            $ext = 'mp4';
+            if (str_contains(strtolower($label), 'mp3') || str_contains(strtolower($href), '.mp3')) {
+                $ext = 'mp3';
+            }
+
+            $cleanTitle = preg_replace('/[^a-zA-Z0-9_-]/', '_', substr($title, 0, 30));
+            $filename = 'tiktok_' . ($cleanTitle ?: 'video') . '_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($label)) . '.' . $ext;
+
+            $items[] = [
+                'thumb' => $thumb,
+                'url' => $href,
+                'filename' => $filename,
+                'label' => $label,
+            ];
+        }
+
+        return $items;
     }
 }

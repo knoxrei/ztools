@@ -3,7 +3,7 @@
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Instagram & Media Downloader')] class extends Component
+new #[Title('Media Downloader')] class extends Component
 {
     // Single File Component logic
 };
@@ -59,9 +59,9 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             <flux:icon icon="arrow-down-tray" class="size-7" />
         </div>
         <div>
-            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Instagram &amp; Media Downloader</h1>
+            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Media Downloader</h1>
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                Download Instagram posts, reels, and images. Paste the post URL below and fetch your media.
+                Download Instagram posts, reels, images, or TikTok videos. Paste the link below and fetch your media.
             </p>
         </div>
     </div>
@@ -86,7 +86,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     type="text"
                     name="url"
                     x-model="url"
-                    placeholder="instagram.com/p/ABC123  or  instagram.com/reel/..."
+                    placeholder="instagram.com/p/...  or  tiktok.com/@user/video/..."
                     class="w-full pl-10 pr-28 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
                 <button
                     type="button"
@@ -107,12 +107,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             </div>
         </div>
 
-        <!-- Action row -->
-        <div class="flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-600">
-            <p>
-                Powered by <span class="text-zinc-500 dark:text-zinc-400 font-semibold">Downloadgram API</span>
-            </p>
-        </div>
+
     </div>
 
     <!-- Error state -->
@@ -196,7 +191,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                                         loading="lazy"
                                         onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-preview').style.display='flex'; const badge = this.parentNode.querySelector('.index-badge'); if(badge) badge.style.display='none'; const playBtn = this.parentNode.querySelector('.play-btn'); if(playBtn) playBtn.style.display='none';"
                                         class="w-full h-full object-cover transition duration-300 hover:scale-105" />
-                                    
+
                                     <!-- Play overlay for reels/videos -->
                                     <template x-if="item.url.includes('.mp4') || item.filename.includes('.mp4') || (item.label && item.label.toLowerCase().includes('video'))">
                                         <button
@@ -212,7 +207,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 
                                     <!-- Fallback icon when image fails -->
                                     <div style="display: none;"
-                                         class="fallback-preview absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
+                                        class="fallback-preview absolute inset-0 flex flex-col items-center justify-center gap-2 text-zinc-400 dark:text-zinc-600">
                                         <flux:icon icon="film" class="size-8" />
                                         <span class="text-[10px] font-semibold uppercase tracking-widest">Preview unavailable</span>
                                     </div>
@@ -229,7 +224,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                         <div class="flex items-center justify-between gap-2">
                             <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 truncate flex-1" x-text="item.filename"></p>
                             <!-- Badge specifying media type -->
-                            <span 
+                            <span
                                 x-text="item.url.includes('.mp4') || item.filename.includes('.mp4') || (item.label && item.label.toLowerCase().includes('video')) ? 'Video/Reel' : 'Image'"
                                 :class="item.url.includes('.mp4') || item.filename.includes('.mp4') || (item.label && item.label.toLowerCase().includes('video')) 
                                     ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-800/40' 
@@ -275,14 +270,14 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             <flux:icon icon="arrow-down-tray" class="size-6 text-violet-500 dark:text-violet-400" />
         </div>
         <div class="space-y-1">
-            <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Paste an Instagram URL above</p>
-            <p class="text-xs text-zinc-400 dark:text-zinc-600">Supports posts, reels, stories &amp; carousel images</p>
+            <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Paste an Instagram or TikTok URL above</p>
+            <p class="text-xs text-zinc-400 dark:text-zinc-600">Supports Instagram posts, reels, carousels &amp; TikTok videos or MP3 audio</p>
         </div>
         <div class="flex flex-wrap justify-center gap-2 pt-2">
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Posts</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Reels</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Carousel</span>
-            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Videos</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Instagram Posts &amp; Reels</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Instagram Carousel Images</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">TikTok Videos (No Watermark)</span>
+            <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">TikTok MP3 Audio</span>
         </div>
     </div>
 
