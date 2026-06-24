@@ -160,39 +160,47 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <template x-for="(item, i) in results" :key="i">
-                <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-                    <div class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-square overflow-hidden">
-                        <template x-if="item.thumb">
-                            <img
-                                :src="item.thumb"
-                                :alt="'Media preview ' + (i + 1)"
-                                loading="lazy"
-                                class="w-full h-full object-cover transition duration-300 hover:scale-105" />
-                        </template>
-                        <div
-                            x-show="!item.thumb"
-                            class="absolute inset-0 flex items-center justify-center">
-                            <flux:icon icon="photo" class="size-10 text-zinc-400 dark:text-zinc-700" />
-                        </div>
+                <div
+                    x-data="{ thumbFailed: false }"
+                    class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
+                    <!-- Thumbnail area: hidden entirely if image fails to load -->
+                    <div
+                        x-show="item.thumb && !thumbFailed"
+                        class="relative w-full bg-zinc-100 dark:bg-zinc-950 aspect-square overflow-hidden">
+                        <img
+                            :src="item.thumb"
+                            :alt="'Media ' + (i + 1)"
+                            loading="lazy"
+                            @error="thumbFailed = true"
+                            class="w-full h-full object-cover transition duration-300 hover:scale-105" />
                         <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white">
                             #<span x-text="i + 1"></span>
                         </div>
                     </div>
 
                     <div class="p-4 flex flex-col gap-3 flex-1">
+                        <!-- Item index badge when no thumb -->
+                        <template x-if="!item.thumb || thumbFailed">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-bold rounded-full border border-zinc-200 dark:border-zinc-700">
+                                    File #<span x-text="i + 1"></span>
+                                </span>
+                            </div>
+                        </template>
                         <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 truncate" x-text="item.filename"></p>
                         <a
                             :href="item.url"
                             download
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-violet-700 dark:text-violet-400 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 rounded-xl border border-violet-200 dark:border-violet-800/80 transition">
+                            class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-violet-700 dark:text-violet-400 bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/20 dark:hover:bg-violet-900/30 rounded-xl border border-violet-200 dark:border-violet-800/80 transition">
                             <flux:icon icon="arrow-down-tray" class="size-3.5" />
                             <span x-text="item.label || 'DOWNLOAD'"></span>
                         </a>
                     </div>
                 </div>
             </template>
+
         </div>
     </div>
 
