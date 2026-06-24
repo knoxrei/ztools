@@ -35,7 +35,7 @@ new #[Title('Instagram & Media Downloader')] class extends Component
 
             </div>
 
-            <!-- URL input -->
+            <!-- URL input + download button -->
             <div class="relative flex items-center">
                 <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
                     <flux:icon icon="link" class="size-4" />
@@ -45,30 +45,29 @@ new #[Title('Instagram & Media Downloader')] class extends Component
                     name="url"
                     x-model="url"
                     placeholder="instagram.com/p/ABC123  or  instagram.com/reel/..."
-                    class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
+                    class="w-full pl-10 pr-28 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
+                <button
+                    type="button"
+                    @click="fetchDownload()"
+                    :disabled="loading || !url.trim()"
+                    class="absolute right-1.5 top-1.5 bottom-1.5 flex items-center gap-1.5 px-3.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition shadow-sm">
+                    <template x-if="loading">
+                        <svg class="animate-spin size-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
+                    </template>
+                    <template x-if="!loading">
+                        <flux:icon icon="arrow-down-tray" class="size-3" />
+                    </template>
+                    <span x-text="loading ? 'Fetching...' : 'Download'"></span>
+                </button>
             </div>
         </div>
 
         <!-- Action row -->
-        <div class="flex flex-wrap items-center gap-3">
-            <button
-                type="button"
-                @click="fetchDownload()"
-                :disabled="loading || !url.trim()"
-                class="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition shadow-sm">
-                <template x-if="loading">
-                    <svg class="animate-spin size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg>
-                </template>
-                <template x-if="!loading">
-                    <flux:icon icon="arrow-down-tray" class="size-3.5" />
-                </template>
-                <span x-text="loading ? 'Fetching...' : 'Download'"></span>
-            </button>
-
-            <p class="text-[10px] text-zinc-400 dark:text-zinc-600">
+        <div class="flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-600">
+            <p>
                 Powered by <span class="text-zinc-500 dark:text-zinc-400 font-semibold">Downloadgram API</span>
             </p>
         </div>
