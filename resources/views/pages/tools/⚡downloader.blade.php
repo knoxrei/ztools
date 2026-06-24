@@ -10,6 +10,7 @@ new #[Title('Media Downloader')] class extends Component
 ?>
 
 <div class="min-h-screen pb-16 space-y-8" x-data="{
+    activeTab: 'instagram',
     url: '',
     loading: false,
     results: [],
@@ -26,6 +27,7 @@ new #[Title('Media Downloader')] class extends Component
         try {
             const formData = new FormData();
             formData.append('url', this.url.trim());
+            formData.append('platform', this.activeTab);
             const tokenMeta = document.querySelector('meta[name=\'csrf-token\']');
             formData.append('_token', tokenMeta ? tokenMeta.content : '');
             const res = await fetch('/downloader/fetch', {
@@ -61,53 +63,112 @@ new #[Title('Media Downloader')] class extends Component
         <div>
             <h1 class="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Media Downloader</h1>
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                Download Instagram posts, reels, images, or TikTok videos. Paste the link below and fetch your media.
+                Download Instagram posts, reels, images, or TikTok videos. Choose the platform and fetch your media.
             </p>
         </div>
     </div>
 
     <!-- Input Card -->
-    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 space-y-5">
-
-        <div class="space-y-1.5">
-            <div class="flex items-center justify-between">
-                <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                    Instagram / Media URL
-                </label>
-
-            </div>
-
-            <!-- URL input + download button -->
-            <div class="relative flex items-center">
-                <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
-                    <flux:icon icon="link" class="size-4" />
-                </div>
-                <input
-                    type="text"
-                    name="url"
-                    x-model="url"
-                    placeholder="instagram.com/p/...  or  tiktok.com/@user/video/..."
-                    class="w-full pl-10 pr-28 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
-                <button
-                    type="button"
-                    @click="fetchDownload()"
-                    :disabled="loading || !url.trim()"
-                    class="absolute right-1.5 top-1.5 bottom-1.5 flex items-center gap-1.5 px-3.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition shadow-sm">
-                    <template x-if="loading">
-                        <svg class="animate-spin size-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                        </svg>
-                    </template>
-                    <template x-if="!loading">
-                        <flux:icon icon="arrow-down-tray" class="size-3" />
-                    </template>
-                    <span x-text="loading ? 'Fetching...' : 'Download'"></span>
-                </button>
-            </div>
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
+        <!-- Tab Switcher -->
+        <div class="flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+            <button
+                type="button"
+                @click="activeTab = 'instagram'; reset();"
+                :class="activeTab === 'instagram' ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400 font-bold bg-white dark:bg-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300'"
+                class="flex-1 py-3.5 text-center border-b-2 text-xs font-bold uppercase tracking-wider transition">
+                <span class="flex items-center justify-center gap-2">
+                    <flux:icon icon="photo" class="size-4" />
+                    Instagram Downloader
+                </span>
+            </button>
+            <button
+                type="button"
+                @click="activeTab = 'tiktok'; reset();"
+                :class="activeTab === 'tiktok' ? 'border-violet-600 text-violet-600 dark:text-violet-400 dark:border-violet-400 font-bold bg-white dark:bg-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300'"
+                class="flex-1 py-3.5 text-center border-b-2 text-xs font-bold uppercase tracking-wider transition">
+                <span class="flex items-center justify-center gap-2">
+                    <flux:icon icon="play" class="size-4" />
+                    TikTok Downloader
+                </span>
+            </button>
         </div>
 
+        <div class="p-6 space-y-5">
+            <!-- Instagram Input tab content -->
+            <template x-if="activeTab === 'instagram'">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                        Instagram URL (Post, Reel, Carousel, or Image)
+                    </label>
 
+                    <div class="relative flex items-center">
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
+                            <flux:icon icon="link" class="size-4" />
+                        </div>
+                        <input
+                            type="text"
+                            name="url"
+                            x-model="url"
+                            placeholder="instagram.com/p/ABC123  or  instagram.com/reel/..."
+                            class="w-full pl-10 pr-28 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
+                        <button
+                            type="button"
+                            @click="fetchDownload()"
+                            :disabled="loading || !url.trim()"
+                            class="absolute right-1.5 top-1.5 bottom-1.5 flex items-center gap-1.5 px-3.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition shadow-sm">
+                            <template x-if="loading">
+                                <svg class="animate-spin size-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                </svg>
+                            </template>
+                            <template x-if="!loading">
+                                <flux:icon icon="arrow-down-tray" class="size-3" />
+                            </template>
+                            <span x-text="loading ? 'Fetching...' : 'Download'"></span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- TikTok Input tab content -->
+            <template x-if="activeTab === 'tiktok'">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                        TikTok URL (Video or MP3 Audio)
+                    </label>
+
+                    <div class="relative flex items-center">
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
+                            <flux:icon icon="link" class="size-4" />
+                        </div>
+                        <input
+                            type="text"
+                            name="url"
+                            x-model="url"
+                            placeholder="tiktok.com/@username/video/...  or  vt.tiktok.com/..."
+                            class="w-full pl-10 pr-28 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-sm font-mono text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:focus:ring-violet-400 transition placeholder-zinc-400 dark:placeholder-zinc-600" />
+                        <button
+                            type="button"
+                            @click="fetchDownload()"
+                            :disabled="loading || !url.trim()"
+                            class="absolute right-1.5 top-1.5 bottom-1.5 flex items-center gap-1.5 px-3.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition shadow-sm">
+                            <template x-if="loading">
+                                <svg class="animate-spin size-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                </svg>
+                            </template>
+                            <template x-if="!loading">
+                                <flux:icon icon="arrow-down-tray" class="size-3" />
+                            </template>
+                            <span x-text="loading ? 'Fetching...' : 'Download'"></span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
     </div>
 
     <!-- Error state -->

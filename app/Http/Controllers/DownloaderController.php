@@ -17,12 +17,14 @@ class DownloaderController extends Controller
     {
         $validated = $request->validate([
             'url' => ['required', 'string', 'max:2048'],
+            'platform' => ['nullable', 'string', 'in:instagram,tiktok'],
         ]);
 
         $url = $validated['url'];
+        $platform = $request->input('platform', '');
 
-        // Automatically route to TikTok if the URL contains tiktok.com
-        if (str_contains($url, 'tiktok.com')) {
+        // Automatically route to TikTok if specified or if the URL contains tiktok.com
+        if ($platform === 'tiktok' || str_contains($url, 'tiktok.com')) {
             return $this->fetchTiktok($request);
         }
 
@@ -92,7 +94,7 @@ class DownloaderController extends Controller
         $allowedHosts = [
             'scontent', 'cdninstagram.com', 'instagram.com',
             'cdn.downloadgram.org', 'fbcdn.net',
-            'ssstik', 'ssscdn.io', 'tiktokcdn.com', 'tiktok.com', 'byteoversea.com', 'ibyteimg.com'
+            'ssstik', 'ssscdn.io', 'tiktokcdn.com', 'tiktok.com', 'byteoversea.com', 'ibyteimg.com', 'tikcdn.io'
         ];
 
         $host = parse_url($url, PHP_URL_HOST) ?? '';
@@ -158,7 +160,7 @@ class DownloaderController extends Controller
         $allowedHosts = [
             'scontent', 'cdninstagram.com', 'instagram.com',
             'cdn.downloadgram.org', 'fbcdn.net',
-            'ssstik', 'ssscdn.io', 'tiktokcdn.com', 'tiktok.com', 'byteoversea.com', 'ibyteimg.com'
+            'ssstik', 'ssscdn.io', 'tiktokcdn.com', 'tiktok.com', 'byteoversea.com', 'ibyteimg.com', 'tikcdn.io'
         ];
 
         $host = parse_url($url, PHP_URL_HOST) ?? '';
@@ -176,6 +178,8 @@ class DownloaderController extends Controller
 
         // Sanitize filename
         $filename = preg_replace('/[^a-zA-Z0-9_.-]/', '_', $filename);
+        $filename = preg_replace('/__+/', '_', $filename);
+        $filename = trim($filename, '_');
 
         $referer = 'https://www.instagram.com/';
         if (str_contains($url, 'tiktok') || str_contains($url, 'byte') || str_contains($url, 'ssstik') || str_contains($url, 'ssscdn')) {
@@ -485,7 +489,14 @@ class DownloaderController extends Controller
             }
 
             $cleanTitle = preg_replace('/[^a-zA-Z0-9_-]/', '_', substr($title, 0, 30));
-            $filename = 'tiktok_' . ($cleanTitle ?: 'video') . '_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($label)) . '.' . $ext;
+            $cleanTitle = preg_replace('/__+/', '_', $cleanTitle);
+            $cleanTitle = trim($cleanTitle, '_');
+
+            $cleanLabel = preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($label));
+            $cleanLabel = preg_replace('/__+/', '_', $cleanLabel);
+            $cleanLabel = trim($cleanLabel, '_');
+
+            $filename = 'tiktok_' . ($cleanTitle ?: 'video') . '_' . ($cleanLabel ?: 'download') . '.' . $ext;
 
             $items[] = [
                 'thumb' => $thumb,
