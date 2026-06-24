@@ -198,49 +198,48 @@ new #[Title('Instagram & Media Downloader')] class extends Component
             <span class="px-2.5 py-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">Videos</span>
         </div>
     </div>
+    <script>
+        Alpine.data('downloaderApp', () => ({
+            url: '',
+            loading: false,
+            results: [],
+            error: null,
+            hasSearched: false,
 
-</div>
-<script>
-    Alpine.data('downloaderApp', () => ({
-        url: '',
-        loading: false,
-        results: [],
-        error: null,
-        hasSearched: false,
-
-        async fetchDownload() {
-            if (!this.url.trim()) return;
-            this.loading = true;
-            this.error = null;
-            this.results = [];
-            this.hasSearched = true;
-            try {
-                const formData = new FormData();
-                formData.append('url', this.url.trim());
-                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-                formData.append('_token', tokenMeta ? tokenMeta.content : '');
-                const res = await fetch('/downloader/fetch', {
-                    method: 'POST',
-                    body: formData,
-                });
-                const json = await res.json();
-                if (json.success) {
-                    this.results = json.items;
-                } else {
-                    this.error = json.message || 'Something went wrong.';
+            async fetchDownload() {
+                if (!this.url.trim()) return;
+                this.loading = true;
+                this.error = null;
+                this.results = [];
+                this.hasSearched = true;
+                try {
+                    const formData = new FormData();
+                    formData.append('url', this.url.trim());
+                    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                    formData.append('_token', tokenMeta ? tokenMeta.content : '');
+                    const res = await fetch('/downloader/fetch', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        this.results = json.items;
+                    } else {
+                        this.error = json.message || 'Something went wrong.';
+                    }
+                } catch (e) {
+                    this.error = 'Network error \u2014 please try again.';
+                } finally {
+                    this.loading = false;
                 }
-            } catch (e) {
-                this.error = 'Network error \u2014 please try again.';
-            } finally {
-                this.loading = false;
-            }
-        },
+            },
 
-        reset() {
-            this.url = '';
-            this.results = [];
-            this.error = null;
-            this.hasSearched = false;
-        }
-    }));
-</script>
+            reset() {
+                this.url = '';
+                this.results = [];
+                this.error = null;
+                this.hasSearched = false;
+            }
+        }));
+    </script>
+</div>
