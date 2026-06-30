@@ -132,7 +132,7 @@ $pageKeywords = $seo['keywords'];
             }
         }
     </script>
-    <script src="https://adknox.subhub.tr/js/get-banners.js" async></script>
+    <script src="https://adknox.subhub.tr/js/get-banners.js?v=2" async></script>
 
     <!-- JSON-LD Structured Data for WebApplication -->
     @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services', 'downloader']))
