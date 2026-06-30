@@ -263,8 +263,9 @@ $pageKeywords = $seo['keywords'];
                 "brand": "AdKnox",
                 "appname": "adknox"
             })
-            document.addEventListener('livewire:navigated', initializeBanners);
-            initializeBanners();
+        }
+        document.addEventListener('livewire:navigated', initializeBanners);
+        initializeBanners();
     </script>
 </body>
 
