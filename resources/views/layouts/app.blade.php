@@ -262,7 +262,7 @@ $pageKeywords = $seo['keywords'];
             (window.getBanners = window.getBanners || function(c) {
                 (window.admateQueue = window.admateQueue || []).push(c)
             })({
-                "clearnet": "http://adknox.subhub.tr",
+                "clearnet": "https://adknox.subhub.tr",
                 "tor": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
                 "onion": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
                 "tracking": "EWW5n1Q7w5",
