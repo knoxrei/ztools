@@ -258,10 +258,7 @@ $pageKeywords = $seo['keywords'];
                 "clearnet": "https://adknox.subhub.tr",
                 "tor": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
                 "tracking": "EWW5n1Q7w5",
-                "type": "468-60",
-                "count": 4,
-                "brand": "AdKnox",
-                "appname": "admate"
+                "type": "468-60"
             })
         }
         document.addEventListener('livewire:navigated', initializeBanners);
