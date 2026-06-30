@@ -186,7 +186,7 @@ $pageKeywords = $seo['keywords'];
                 <flux:sidebar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>All Tools</flux:sidebar.item>
                 <flux:sidebar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:sidebar.item>
                 <flux:sidebar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
-                <flux:sidebar.item href="https://ztool.subhub.tr" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
+                <flux:sidebar.item :href="config('app.advertiser_url')" icon="banknotes">Advertiser</flux:sidebar.item>
 
 
 

@@ -24,5 +24,5 @@ Route::get('/downloader/download', [DownloaderController::class, 'download'])->n
 Route::livewire('/contact', 'pages::contact')->name('contact');
 Route::get('/advertiser', function () {
     return redirect(config('app.advertiser_url'));
-});
+})->name('advertiser');
 Route::get('/s/{code}', [ShortLinkRedirectController::class, 'handle'])->name('short-link.redirect');
