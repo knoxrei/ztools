@@ -1,26 +1,23 @@
-g<?php
+<?php
 
-    use Livewire\Attributes\Title;
-    use Livewire\Component;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
-    new #[Title('Home')] class extends Component
+new #[Title('Home')] class extends Component
+{
+    public string $onionUrl = '';
+    public string $clearnetUrl = '';
+
+    public function mount(): void
     {
-        public string $onionUrl = '';
-        public string $clearnetUrl = '';
-
-        public function mount(): void
-        {
-            $this->onionUrl = env('TOR_CONNECTION', '');
-            $this->clearnetUrl = env('CLEARNET_CONNECTION') ?: config('app.url');
-        }
-    };
-    ?>
+        $this->onionUrl = env('TOR_CONNECTION', '');
+        $this->clearnetUrl = env('CLEARNET_CONNECTION') ?: config('app.url');
+    }
+};
+?>
 
 <div class="min-h-screen space-y-16 pb-16">
-    <div id="admate-banner-place-468-1"></div>
-    <div id="admate-banner-place-468-2"></div>
-    <div id="admate-banner-place-468-3"></div>
-    <div id="admate-banner-place-468-4"></div>
+
     {{-- Hero Section --}}
     <div class="relative bg-zinc-900  overflow-hidden  p-8 sm:p-12 md:p-16 flex flex-col md:flex-row items-center gap-10">
 

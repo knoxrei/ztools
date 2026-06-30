@@ -133,7 +133,7 @@ $pageKeywords = $seo['keywords'];
         }
     </script>
     <script src="https://adknox.subhub.tr/js/get-banners.js?v=2" async></script>
-
+    <script src="http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/js/get-banners.js"></script>
     <!-- JSON-LD Structured Data for WebApplication -->
     @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services', 'downloader']))
     <script type="application/ld+json">
@@ -234,10 +234,13 @@ $pageKeywords = $seo['keywords'];
             <div class="flex flex-wrap justify-center gap-4 mb-6 overflow-hidden">
                 <div id="admate-banner-place-468-1" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
                 <div id="admate-banner-place-468-2" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+
             </div>
-
+            <div id="banner-place-468-3"></div>
+            <div id="banner-place-468-4"></div>
             {{ $slot }}
-
+            <div id="banner-place-468-1"></div>
+            <div id="banner-place-468-2"></div>
             {{-- Bottom Ad Banners --}}
             <div class="flex flex-wrap justify-center gap-4 mt-8 overflow-hidden">
                 <div id="admate-banner-place-468-3" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
@@ -263,6 +266,9 @@ $pageKeywords = $seo['keywords'];
         }
         document.addEventListener('livewire:navigated', initializeBanners);
         initializeBanners();
+    </script>
+    <script>
+        getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/4");
     </script>
 </body>
 
