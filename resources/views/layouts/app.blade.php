@@ -186,6 +186,7 @@ $pageKeywords = $seo['keywords'];
                 <flux:sidebar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>All Tools</flux:sidebar.item>
                 <flux:sidebar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:sidebar.item>
                 <flux:sidebar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
+                <flux:sidebar.item href="https://ztool.subhub.tr" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
 
 
 
@@ -236,11 +237,15 @@ $pageKeywords = $seo['keywords'];
                 <div id="admate-banner-place-468-2" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
 
             </div>
-            <div id="banner-place-468-3"></div>
-            <div id="banner-place-468-4"></div>
+            <div class="flex flex-wrap justify-center gap-4 mb-6 overflow-hidden">
+                <div id="banner-place-468-3"></div>
+                <div id="banner-place-468-4"></div>
+            </div>
             {{ $slot }}
-            <div id="banner-place-468-1"></div>
-            <div id="banner-place-468-2"></div>
+            <div class="flex flex-wrap justify-center gap-4 mt-8 overflow-hidden">
+                <div id="banner-place-468-1"></div>
+                <div id="banner-place-468-2"></div>
+            </div>
             {{-- Bottom Ad Banners --}}
             <div class="flex flex-wrap justify-center gap-4 mt-8 overflow-hidden">
                 <div id="admate-banner-place-468-3" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>

@@ -22,5 +22,7 @@ Route::post('/downloader/fetch', [DownloaderController::class, 'fetch'])->name('
 Route::get('/downloader/thumb', [DownloaderController::class, 'thumb'])->name('downloader.thumb');
 Route::get('/downloader/download', [DownloaderController::class, 'download'])->name('downloader.download');
 Route::livewire('/contact', 'pages::contact')->name('contact');
-
+Route::get('/advertiser', function () {
+    return redirect(config('app.advertiser_url'));
+});
 Route::get('/s/{code}', [ShortLinkRedirectController::class, 'handle'])->name('short-link.redirect');

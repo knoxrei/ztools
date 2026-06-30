@@ -14,7 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-
+    'advertiser_url' => env('ADVERTISER_URL', 'non'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
