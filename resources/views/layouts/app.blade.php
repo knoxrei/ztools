@@ -53,14 +53,14 @@ $seo = match ($routeName) {
 'keywords' => 'anonymous file upload, secure file host, gofile upload, anonfile, image host, onion file upload, privacy file sharing',
 ],
 'services' => [
-    'title'       => 'Multi Search & Service Gateways - Search Clearnet & Tor | Z-Knox',
-    'description' => 'Search across multiple web services anonymously. Gateways for Search Engines, Translator, Reddit, Pinterest, Twitter, Booru, Wikipedia, Imgur, Explorer, Library, English utilities, OpenPGP, Telegram, and Onion Search.',
-    'keywords'    => 'multi search, service gateways, search engine, onion search, tor search, anonymous search, wikiless, redlib, nitter, simplytranslate',
+'title' => 'Multi Search & Service Gateways - Search Clearnet & Tor | Z-Knox',
+'description' => 'Search across multiple web services anonymously. Gateways for Search Engines, Translator, Reddit, Pinterest, Twitter, Booru, Wikipedia, Imgur, Explorer, Library, English utilities, OpenPGP, Telegram, and Onion Search.',
+'keywords' => 'multi search, service gateways, search engine, onion search, tor search, anonymous search, wikiless, redlib, nitter, simplytranslate',
 ],
 'downloader' => [
-    'title'       => 'Instagram & Media Downloader - Download Posts, Reels & Images | Z-Knox',
-    'description' => 'Download Instagram posts, reels, carousel images, and videos directly. Fast, anonymous media downloader powered by Downloadgram API.',
-    'keywords'    => 'instagram downloader, reels downloader, instagram video download, instagram image save, media downloader',
+'title' => 'Instagram & Media Downloader - Download Posts, Reels & Images | Z-Knox',
+'description' => 'Download Instagram posts, reels, carousel images, and videos directly. Fast, anonymous media downloader powered by Downloadgram API.',
+'keywords' => 'instagram downloader, reels downloader, instagram video download, instagram image save, media downloader',
 ],
 'tools' => [
 'title' => 'Tools Suite - Advanced Cyber & Privacy Tools | Z-Knox',
@@ -132,7 +132,15 @@ $pageKeywords = $seo['keywords'];
             }
         }
     </script>
-
+    <script>
+        (function(c, t) {
+            var b = location.hostname.endsWith(".onion") ? t : c,
+                s = document.createElement("script");
+            s.src = b + "/js/get-banners.js";
+            s.async = true;
+            document.head.appendChild(s)
+        })("http://adknox.subhub.tr", "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion");
+    </script>
     <!-- JSON-LD Structured Data for WebApplication -->
     @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services', 'downloader']))
     <script type="application/ld+json">
@@ -157,7 +165,6 @@ $pageKeywords = $seo['keywords'];
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-    <script src="http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/js/get-banners.js" defer></script>
 </head>
 
 <body x-data x-init="$flux.appearance = 'dark'" class="min-h-screen bg-white dark:bg-zinc-900 antialiased">
@@ -232,16 +239,16 @@ $pageKeywords = $seo['keywords'];
         <flux:main container>
             {{-- Top Ad Banners --}}
             <div class="flex flex-wrap justify-center gap-4 mb-6 overflow-hidden">
-                <div id="banner-place-468-1" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
-                <div id="banner-place-468-2" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+                <div id="admate-banner-place-468-1" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+                <div id="admate-banner-place-468-2" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
             </div>
 
             {{ $slot }}
 
             {{-- Bottom Ad Banners --}}
             <div class="flex flex-wrap justify-center gap-4 mt-8 overflow-hidden">
-                <div id="banner-place-468-3" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
-                <div id="banner-place-468-4" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+                <div id="admate-banner-place-468-3" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
+                <div id="admate-banner-place-468-4" class="w-[468px] h-[60px] bg-zinc-800/30 rounded border border-zinc-800/50 flex items-center justify-center overflow-hidden"></div>
             </div>
         </flux:main>
     </div>
@@ -252,20 +259,7 @@ $pageKeywords = $seo['keywords'];
 
     <script>
         function initializeBanners() {
-            if (typeof getBanners === 'function') {
-                getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/4");
-            } else {
-                let retries = 0;
-                const interval = setInterval(() => {
-                    retries++;
-                    if (typeof getBanners === 'function') {
-                        getBanners("http://admate3tczgp6digew7jpzcosq52rs7anru53imwqimron27emq7dbqd.onion/api/get-banner/rz3qL7UuuKppCuxG/type/468-60/count/4");
-                        clearInterval(interval);
-                    } else if (retries > 30) {
-                        clearInterval(interval);
-                    }
-                }, 100);
-            }
+            (window.getBanners = window.getBanners || function(c){(window.admateQueue = window.admateQueue || []).push(c)})({"clearnet":"http://adknox.subhub.tr","tor":"http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion","onion":"http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion","tracking":"EWW5n1Q7w5","type":"468-60","count":4,"brand":"AdKnox","appname":"adknox"});
         }
         document.addEventListener('livewire:navigated', initializeBanners);
         initializeBanners();
