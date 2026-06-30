@@ -132,15 +132,8 @@ $pageKeywords = $seo['keywords'];
             }
         }
     </script>
-    <script>
-        (function(c, t) {
-            var b = location.hostname.endsWith(".onion") ? t : c,
-                s = document.createElement("script");
-            s.src = b + "/js/get-banners.js";
-            s.async = true;
-            document.head.appendChild(s)
-        })("https://adknox.subhub.tr", "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion");
-    </script>
+    <script src="https://adknox.subhub.tr/js/get-banners.js" async></script>
+
     <!-- JSON-LD Structured Data for WebApplication -->
     @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services', 'downloader']))
     <script type="application/ld+json">
@@ -264,16 +257,14 @@ $pageKeywords = $seo['keywords'];
             })({
                 "clearnet": "https://adknox.subhub.tr",
                 "tor": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
-                "onion": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
                 "tracking": "EWW5n1Q7w5",
                 "type": "468-60",
                 "count": 4,
                 "brand": "AdKnox",
                 "appname": "adknox"
-            });
-        }
-        document.addEventListener('livewire:navigated', initializeBanners);
-        initializeBanners();
+            })
+            document.addEventListener('livewire:navigated', initializeBanners);
+            initializeBanners();
     </script>
 </body>
 
