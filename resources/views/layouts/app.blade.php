@@ -139,7 +139,7 @@ $pageKeywords = $seo['keywords'];
             s.src = b + "/js/get-banners.js";
             s.async = true;
             document.head.appendChild(s)
-        })("http://adknox.subhub.tr", "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion");
+        })("https://adknox.subhub.tr", "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion");
     </script>
     <!-- JSON-LD Structured Data for WebApplication -->
     @if(in_array($routeName, ['encryption', 'decryption', 'hash-checksum', 'forensics', 'qrcode', 'fake-identity', 'shortlink', 'url-checker', 'filehost', 'services', 'downloader']))
@@ -259,7 +259,18 @@ $pageKeywords = $seo['keywords'];
 
     <script>
         function initializeBanners() {
-            (window.getBanners = window.getBanners || function(c){(window.admateQueue = window.admateQueue || []).push(c)})({"clearnet":"http://adknox.subhub.tr","tor":"http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion","onion":"http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion","tracking":"EWW5n1Q7w5","type":"468-60","count":4,"brand":"AdKnox","appname":"adknox"});
+            (window.getBanners = window.getBanners || function(c) {
+                (window.admateQueue = window.admateQueue || []).push(c)
+            })({
+                "clearnet": "http://adknox.subhub.tr",
+                "tor": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
+                "onion": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
+                "tracking": "EWW5n1Q7w5",
+                "type": "468-60",
+                "count": 4,
+                "brand": "AdKnox",
+                "appname": "adknox"
+            });
         }
         document.addEventListener('livewire:navigated', initializeBanners);
         initializeBanners();
