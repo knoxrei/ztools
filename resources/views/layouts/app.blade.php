@@ -261,7 +261,7 @@ $pageKeywords = $seo['keywords'];
                 "type": "468-60",
                 "count": 4,
                 "brand": "AdKnox",
-                "appname": "adknox"
+                "appname": "admate"
             })
         }
         document.addEventListener('livewire:navigated', initializeBanners);
