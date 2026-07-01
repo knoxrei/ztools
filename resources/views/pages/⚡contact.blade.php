@@ -11,9 +11,8 @@ new #[Title('Contact Us')] class extends Component
 
     public function mount()
     {
-        $this->email    = trim(env('CONTACT_EMAIL', ''));
-        $this->session  = trim(env('CONTACT_SESSION', ''));
-        $this->telegram = trim(env('CONTACT_TELEGRAM', ''));
+        $this->email    = config('app.contact.email');
+        $this->session  = config('app.contact.session');
     }
 };
 ?>
@@ -81,65 +80,6 @@ new #[Title('Contact Us')] class extends Component
             </div>
         </div>
 
-        {{-- Telegram --}}
-        @php $telegramClean = ltrim($telegram, '@'); @endphp
-        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col">
-
-            <div class="p-5 flex flex-col flex-1 space-y-4">
-
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-sky-50 dark:bg-sky-900/20 rounded-lg text-sky-600 dark:text-sky-400">
-                        <flux:icon icon="paper-airplane" class="size-5" />
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Telegram</h3>
-                    </div>
-                </div>
-
-
-
-                <div class="flex-1"></div>
-
-                <div class="space-y-2" x-data="{ copied: false, val: '@{{ $telegramClean }}' }">
-                    <div class="flex items-center justify-between">
-                        <div class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Username</div>
-                        @if($telegram)
-                        <span class="text-[9px] text-zinc-400 dark:text-zinc-500 font-mono">t.me/{{ $telegramClean }}</span>
-                        @endif
-                    </div>
-                    <div class="font-mono text-[11px] break-all bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 rounded-lg text-zinc-700 dark:text-zinc-300 select-all min-h-[48px] flex items-center">
-                        @if($telegram)
-                        {{ '@' . $telegramClean }}
-                        @else
-                        <span class="text-zinc-400 dark:text-zinc-600 italic">Not configured</span>
-                        @endif
-                    </div>
-
-                    @if($telegram)
-                    <div class="flex gap-2">
-                        <a href="https://t.me/{{ $telegramClean }}" target="_blank"
-                            class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-semibold">
-                            <flux:icon icon="arrow-top-right-on-square" class="size-3.5" />
-                            Open Chat
-                        </a>
-                        <button
-                            @click="navigator.clipboard.writeText(val); copied = true; setTimeout(() => copied = false, 2000)"
-                            class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold">
-                            <span x-show="!copied" class="flex items-center gap-1.5">
-                                <flux:icon icon="clipboard-document" class="size-3.5" />
-                                Copy
-                            </span>
-                            <span x-show="copied" class="flex items-center gap-1.5 text-emerald-500" x-cloak>
-                                <flux:icon icon="check" class="size-3.5" />
-                                Copied
-                            </span>
-                        </button>
-                    </div>
-                    @endif
-                </div>
-
-            </div>
-        </div>
 
         {{-- Email --}}
         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col">

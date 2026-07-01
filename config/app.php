@@ -125,4 +125,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'contact' => [
+        'email' => env('CONTACT_EMAIL', ''),
+        'session' => env('CONTACT_SESSION', ''),
+    ],
 ];
