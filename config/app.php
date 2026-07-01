@@ -14,7 +14,9 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-    'advertiser_url' => env('ADVERTISER_URL', 'non'),
+    'advertiser_url' => env('ADVERTISER_URL', 'https://adknox.subhub.tr'),
+    'advertise_url' => env('ADVERTISE_URL', 'https://adknox.subhub.tr'),
+    'support_url' => env('SUPPORT_URL', 'https://adknox.subhub.tr/support-us'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment

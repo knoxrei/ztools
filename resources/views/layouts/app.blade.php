@@ -148,7 +148,15 @@ $pageKeywords = $seo['keywords'];
         }
     </script>
     @endif
-
+    <script>
+        (function() {
+            var s = document.createElement('script');
+            var isTor = /\.onion$/.test(window.location.hostname);
+            s.src = (isTor ? 'http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion' : 'https://adknox.subhub.tr') + '/js/get-banners.js?v=2';
+            s.async = true;
+            document.head.appendChild(s);
+        })();
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
@@ -170,7 +178,7 @@ $pageKeywords = $seo['keywords'];
         <flux:navbar class="w-full max-lg:hidden justify-end ">
             <flux:navbar.item :href="route('home')" icon="home" :current="request()->routeIs('home')" wire:navigate>Home</flux:navbar.item>
             <flux:navbar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>Tools</flux:navbar.item>
-            <flux:navbar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:navbar.item>
+            <flux:navbar.item :href="config('app.support_url')" icon="heart">Support Us</flux:navbar.item>
             <flux:navbar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:navbar.item>
         </flux:navbar>
 
@@ -184,9 +192,9 @@ $pageKeywords = $seo['keywords'];
             <flux:sidebar.nav>
                 <flux:sidebar.item :href="route('home')" icon="home" :current="request()->routeIs('home')" wire:navigate>Home</flux:sidebar.item>
                 <flux:sidebar.item :href="route('tools')" icon="square-3-stack-3d" :current="request()->routeIs('tools')" wire:navigate>All Tools</flux:sidebar.item>
-                <flux:sidebar.item :href="route('support')" icon="heart" :current="request()->routeIs('support')" wire:navigate>Support Us</flux:sidebar.item>
+                <flux:sidebar.item :href="config('app.support_url')" icon="heart">Support Us</flux:sidebar.item>
                 <flux:sidebar.item :href="route('contact')" icon="chat-bubble-left-right" :current="request()->routeIs('contact')" wire:navigate>Contact Us</flux:sidebar.item>
-                <flux:sidebar.item :href="config('app.advertiser_url')" icon="banknotes">Advertiser</flux:sidebar.item>
+                <flux:sidebar.item :href="config('app.advertise_url')" icon="banknotes">Advertiser</flux:sidebar.item>
 
 
 
@@ -260,14 +268,14 @@ $pageKeywords = $seo['keywords'];
 
     <script>
         function initializeBanners() {
-            (window.getBanners = window.getBanners || function(c) {
+            (window.getbannersadknox = window.getbannersadknox || function(c) {
                 (window.admateQueue = window.admateQueue || []).push(c)
             })({
                 "clearnet": "https://adknox.subhub.tr",
                 "tor": "http://adknoxoyhrexnc5b7mtnedh6dwvprhp7avobjem6wpte3kguvigt44yd.onion",
                 "tracking": "EWW5n1Q7w5",
                 "type": "468-60"
-            })
+            });
         }
         document.addEventListener('livewire:navigated', initializeBanners);
         initializeBanners();
